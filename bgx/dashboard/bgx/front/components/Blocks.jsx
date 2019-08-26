@@ -57,8 +57,6 @@ class Blocks extends React.Component {
                 size={{width: 1000, height: 800}}
                 selectedPeerIP={selectedBlock}
                 onSelect={(e) => this.selectBlock(e)}
-                lastN={10}
-                collapseFront={false}
                 loading={loading}/>
 
               <div className="tab-offset">
