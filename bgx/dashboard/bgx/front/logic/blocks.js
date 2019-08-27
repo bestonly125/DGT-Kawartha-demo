@@ -15,8 +15,8 @@
 import { trimHash, decode } from '../helpers/helper';
 
 export function convertBlocks(data) {
-  return data.data.map((d) => {
-    const prev = data.data.find(dd => dd.header_signature == d.header.previous_block_id);
+  return data.map((d) => {
+    const prev = data.find(dd => dd.header_signature == d.header.previous_block_id);
 
     d.name = trimHash(d.header_signature);
     d.IP = d.header_signature;
@@ -24,7 +24,7 @@ export function convertBlocks(data) {
       1: d.header_signature,
     };
     d.depends = prev == undefined ? [] : [prev.header_signature];
-    d.dependedOnBy = data.data.filter((dd) => {
+    d.dependedOnBy = data.filter((dd) => {
         return dd.header.previous_block_id == d.header_signature;
       }).map((dd) => {return dd.header_signature});
 
