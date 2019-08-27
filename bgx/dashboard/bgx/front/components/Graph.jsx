@@ -987,14 +987,14 @@ graph.data = cloneDeep(this.props.data);
           a.push(data[i].IP)
 
       }
-    this.setState({collapsedParents: a})
+      this.setState({collapsedParents: a})
 
-    let forHide  = [];
-    a.forEach((ip) => {
-      this.hideParents(forHide,ip, ip)
-    });
+      let forHide  = [];
+      a.forEach((ip) => {
+        this.hideParents(forHide,ip, ip)
+      });
 
-    this.setState({hiddenParents: forHide})
+      this.setState({hiddenParents: forHide})
     }
 
     if(!lodash.isEqual(this.state.hiddenNodes, prevState.hiddenNodes) ||
