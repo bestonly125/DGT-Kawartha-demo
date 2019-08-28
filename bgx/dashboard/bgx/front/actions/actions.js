@@ -36,12 +36,32 @@ export const PEERS_LOADING = 'PEERS_LOADING';
 export const GET_PEERS = 'GET_PEERS';
 export const SHOW_MODAL = 'SHOW_MODAL';
 
+function nextPage(url, data, resolve, reject){
+  return axios.get(url).
+    then( response => {
+      var r = response.data
+      var recievedData = data.concat(r.data)
+
+      if ('paging' in r && 'next' in r.paging){
+        nextPage(r.paging.next, recievedData, resolve, reject);
+      }
+      else {
+        resolve(data);
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      reject(error);
+    })
+}
+
 export function getTransactions() {
   return function(dispatch) {
     dispatch(transactionsLoading());
-    return axios.get(`${apiUrl}/transactions`)
-      .then( response => {
-        dispatch(getTransactionsSuccess(convertTransactions(response.data)));
+    new Promise((resolve, reject) => {
+      nextPage(`${apiUrl}/transactions`,[],resolve, reject)
+    }).then( data => {
+        dispatch(getTransactionsSuccess(convertTransactions(data)));
       })
       .catch(error => {
         console.log(error)
@@ -54,9 +74,10 @@ export function getTransactions() {
 export function getStates() {
   return function(dispatch) {
     dispatch(statesLoading());
-    return axios.get(`${apiUrl}/state`)
-      .then( response => {
-        dispatch(getStatesSuccess(convertStates(response.data)));
+     new Promise((resolve, reject) => {
+      nextPage(`${apiUrl}/state`,[],resolve, reject)
+    }).then( data => {
+        dispatch(getStatesSuccess(convertStates(data)));
       })
       .catch(error => {
         throw(error);
@@ -67,9 +88,10 @@ export function getStates() {
 
 export function getState(address) {
   return function(dispatch) {
-    return axios.get(`${apiUrl}/state/${address}`)
-      .then( response => {
-        dispatch(getStateSuccess(convertState(response.data, address)));
+    new Promise((resolve, reject) => {
+      nextPage(`${apiUrl}/state/${address}`,[],resolve, reject)
+    }).then( data => {
+        dispatch(getStateSuccess(convertState(data, address)));
       })
       .catch(error => {
         throw(error);
@@ -80,10 +102,12 @@ export function getState(address) {
 export function getBlocks() {
   return function(dispatch) {
     dispatch(blocksLoading());
-    return axios.get(`${apiUrl}/blocks`)
-      .then( response => {
-        dispatch(getBlocksSuccess(convertBlocks(response.data)));
-      })
+    new Promise((resolve, reject) => {
+      nextPage(`${apiUrl}/blocks`,[],resolve, reject)
+    }).then( data => {
+      console.log(data);
+      dispatch(getBlocksSuccess(convertBlocks(data)));
+    })
       .catch(error => {
         throw(error);
         // dispatch(getBlocksSuccess(convertBlocks(blocks)));

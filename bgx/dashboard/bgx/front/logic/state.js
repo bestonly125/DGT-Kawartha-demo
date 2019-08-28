@@ -16,29 +16,29 @@ import { decode } from '../helpers/helper';
 
 export function convertStates(data) {
   //console.log(data.data)
-  data.data = data.data.map((d) => {
+  data = data.map((d) => {
     d.decoded_data = decode(d.data);
     return d;
   });
 
-  return data.data;
+  return data;
 }
 
 export function convertState(data, address) {
 
   return {
-    data: data.data,
+    data: data,
     address: address
   };
 
-  let keys = Object.keys(data.data),
+  let keys = Object.keys(data),
       key = null,
       decoded = null;
 
   if (keys.length) {
     key = keys[0];
 
-    let p = JSON.parse(data.data[key]);
+    let p = JSON.parse(data[key]);
 
     let k = Object.keys(p)[0];
     decoded = JSON.parse(Object.values(p)[0]);
