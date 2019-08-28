@@ -46,7 +46,7 @@ function nextPage(url, data, resolve, reject){
         nextPage(r.paging.next, recievedData, resolve, reject);
       }
       else {
-        resolve(data);
+        resolve(recievedData);
       }
     })
     .catch(error => {
