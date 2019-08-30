@@ -1,4 +1,4 @@
-# Copyright 2016, 2017 Intel Corporation
+# Copyright NTRLab 2019
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ from sawtooth_rest_api.protobuf import client_batch_pb2
 from sawtooth_rest_api.protobuf import client_receipt_pb2
 from sawtooth_rest_api.protobuf import client_peers_pb2
 from sawtooth_rest_api.protobuf import client_status_pb2
+from sawtooth_rest_api.protobuf import client_topology_pb2
 from sawtooth_rest_api.protobuf.block_pb2 import BlockHeader
 from sawtooth_rest_api.protobuf.batch_pb2 import BatchList
 from sawtooth_rest_api.protobuf.batch_pb2 import BatchHeader
@@ -262,11 +263,11 @@ class RouteHandler:
             paging: Paging info and nav, like total resources and a next link
         """
         paging_controls = self._get_paging_controls(request)
-
+        # FIXME for DAG - ask real merkle state
         head, root = await self._head_to_root(request.url.query.get(
             'head', None))
         validator_query = client_state_pb2.ClientStateListRequest(
-            state_root=root,
+            state_root='',#root,
             address=request.url.query.get('address', None),
             sorting=self._get_sorting_message(request, "default"),
             paging=self._make_paging_message(paging_controls))
@@ -304,11 +305,13 @@ class RouteHandler:
         head = request.url.query.get('head', None)
 
         head, root = await self._head_to_root(head)
+        # FIXME for DAG - ask real merkle state
         response = await self._query_validator(
             Message.CLIENT_STATE_GET_REQUEST,
             client_state_pb2.ClientStateGetResponse,
             client_state_pb2.ClientStateGetRequest(
-                state_root=root, address=address),
+                state_root='',#root,
+                address=address),
             error_traps)
 
         return self._wrap_response(
@@ -577,6 +580,67 @@ class RouteHandler:
             request,
             data=response['peers'],
             metadata=self._get_metadata(request, response))
+
+    async def fetch_topology(self, request):
+        """Fetches the topology from the validator.
+        Request:
+
+        Response:
+            data: JSON array of net topology
+            link: The link to this exact query
+        """
+
+        response = await self._query_validator(
+            Message.CLIENT_TOPOLOGY_GET_REQUEST,
+            client_topology_pb2.ClientTopologyGetResponse,
+            client_topology_pb2.ClientTopologyGetRequest())
+
+        return self._wrap_response(
+            request,
+            data=response['topology'],
+            metadata=self._get_metadata(request, response))
+
+
+    async def list_dag(self, request):
+        """Fetches active heads from the validator.
+        Request: batch_id = request.match_info.get('batch_id', '')
+
+        Response:
+            data: JSON array of peer endpoints
+            link: The link to this exact query
+        """
+        LOGGER.debug('Request list_heads')
+        response = await self._query_validator(
+            Message.CLIENT_HEADS_GET_REQUEST,
+            client_heads_pb2.ClientHeadsGetResponse,
+            client_heads_pb2.ClientHeadsGetRequest(head_id=''))
+
+        return self._wrap_response(
+            request,
+            data=response['heads'],
+            metadata=self._get_metadata(request, response))
+
+    async def fetch_dag(self, request):
+        """Fetches active heads from the validator.
+        Request:
+            head_id - head id or type of head
+
+        Response:
+            data: JSON array of peer endpoints
+            link: The link to this exact query
+        """
+        head_id = request.match_info.get('head_id', '')
+        LOGGER.debug('Request fetch_heads head_id=%s',head_id)
+        response = await self._query_validator(
+            Message.CLIENT_HEADS_GET_REQUEST,
+            client_heads_pb2.ClientHeadsGetResponse,
+            client_heads_pb2.ClientHeadsGetRequest(head_id=head_id))
+
+        return self._wrap_response(
+            request,
+            data=response['heads'],
+            metadata=self._get_metadata(request, response))
+
 
     async def fetch_nodes(self, request):
         """Fetches the nodes from the validator.
