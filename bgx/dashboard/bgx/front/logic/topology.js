@@ -13,23 +13,30 @@
 // -----------------------------------------------------------------------------
 
 import { trimHash, decode } from '../helpers/helper';
+import colorbrewer from 'colorbrewer';
 
-export function convertBlocks(data) {
-  return data.map((d) => {
-    const prev = data.find(dd => dd.header_signature == d.header.previous_block_id);
+export function convertTopology(data) {
 
-    d.block_num = d.header.block_num;
-    d.signer_public_key = d.header.signer_public_key;
-    d.name = trimHash(d.header_signature);
-    d.IP = d.header_signature;
-    d.tooltip = {
-      1: d.header_signature,
-    };
-    d.depends = prev == undefined ? [] : [prev.header_signature];
-    d.dependedOnBy = data.filter((dd) => {
-        return dd.header.previous_block_id == d.header_signature;
-      }).map((dd) => {return dd.header_signature});
+ // let colors = colorbrewer.Set3[count+5];
+  let keys = ['genesis'];
 
-    return d;
-  })
+  getChildren(data.children, keys);
+
+  let colors = colorbrewer.Set3[keys.length];
+
+  let r = {};
+  keys.forEach((k,i) => {r[k]= colors[i]})
+  return r;
+}
+
+function getChildren(node, colors) {
+  console.log('node', node);
+  if (node.cluster)
+    return getChildren(node.cluster.children, colors)
+  else
+    Object.keys(node).forEach(key => {
+        console.log('t', node[key]);
+      if ('cluster' in node[key]) getChildren(node[key].cluster.children, colors)
+      colors.push(key)
+    });
 }

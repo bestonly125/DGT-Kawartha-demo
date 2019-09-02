@@ -816,19 +816,30 @@ graph.data = cloneDeep(this.props.data);
   }
 
   colorFor(d) {
-    const { selectedFilters, filters, selectedPeerIP } = this.props;
+    const { selectedFilters, filters, selectedPeerIP, blockColors } = this.props;
+
+    if ('block_num' in d && d.block_num == 0) {
+        return blockColors['genesis'];
+    }
+    else if('signer_public_key' in d){
+        return blockColors[d.signer_public_key];
+    }
+    else {
+        // return '#17a2b8';
+
 
     // if (d.IP == selectedPeerIP)
     //   return '#ffc107'
 
-    if (null == selectedFilters || Object.keys(selectedFilters).length == 0 )
-      return '#17a2b8';
+        if (null == selectedFilters || Object.keys(selectedFilters).length == 0 )
+          return '#17a2b8';
 
-    const key = Object.keys(selectedFilters)[0]
+        const key = Object.keys(selectedFilters)[0]
 
-    const list = filters.filter((f) => {return f.field == key })[0].list
+        const list = filters.filter((f) => {return f.field == key })[0].list
 
-    return list[d[key]];
+        return list[d[key]];
+    }
   }
 
   colorForDarker(d) {
@@ -1067,4 +1078,8 @@ Graph.defaultProps = {
   loading: false,
 }
 
-export default Graph;
+export default connect (
+    state => ({
+      blockColors: state.topologyReducer.data,
+    }),
+    null)(Graph);

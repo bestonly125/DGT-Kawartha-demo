@@ -33,9 +33,9 @@ import './app.scss';
 
 import Main from './components/Main';
 
-import BJXReducer from './reducers/BJXReducer';
+import BGXReducer from './reducers/BGXReducer';
 
-import { getTransactions, getPeers, getStates, getBlocks } from './actions/actions';
+import { getTransactions, getPeers, getStates, getBlocks, getTopology } from './actions/actions';
 
 library.add(faEnvelope);
 library.add(faChevronUp);
@@ -44,12 +44,12 @@ library.add(faSearch);
 library.add(faSync);
 library.add(faFilter);
 
-
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-window.store = createStore(BJXReducer,
+window.store = createStore(BGXReducer,
   composeEnhancer(applyMiddleware(thunk)),);
 
+store.dispatch(getTopology());
 store.dispatch(getTransactions());
 store.dispatch(getPeers());
 store.dispatch(getStates());

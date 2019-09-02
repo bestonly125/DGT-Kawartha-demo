@@ -14,12 +14,13 @@
 
 import axios from 'axios';
 
-import { nodes, transactions, states, state, blocks } from '../dummies'
+import { nodes, transactions, states, state, blocks, topology } from '../dummies'
 
 import { convertPeers } from '../logic/peers'
 import { convertTransactions } from '../logic/transactions'
 import { convertStates, convertState } from '../logic/state'
 import { convertBlocks } from '../logic/blocks'
+import { convertTopology } from '../logic/topology'
 
 export const apiUrl = location.origin;
 //const apiUrl = 'http://18.217.2.175:8003';
@@ -29,12 +30,18 @@ export const GET_TRANSACTIONS = 'GET_TRANSACTIONS';
 export const GET_STATES = 'GET_STATES';
 export const GET_STATE = 'GET_STATE';
 export const GET_BLOCKS = 'GET_BLOCKS';
+export const GET_PEERS = 'GET_PEERS';
+export const GET_TOPOLOGY = 'GET_TOPOLOGY';
+
 export const TRANSACTIONS_LOADING = 'TRANSACTIONS_LOADING';
 export const STATES_LOADING = 'STATES_LOADING';
 export const BLOCKS_LOADING = 'BLOCKS_LOADING';
 export const PEERS_LOADING = 'PEERS_LOADING';
-export const GET_PEERS = 'GET_PEERS';
+export const TOPOLOGY_LOADING = 'TOPOLOGY_LOADING';
+
+
 export const SHOW_MODAL = 'SHOW_MODAL';
+
 
 function nextPage(url, data, resolve, reject){
   return axios.get(url).
@@ -129,6 +136,20 @@ export function getPeers() {
   };
 }
 
+export function getTopology() {
+  return function(dispatch) {
+    dispatch(topologyLoading());
+    return axios.get(`${apiUrl}/topology`)
+      .then( response => {
+        dispatch(getTopologySuccess(convertTopology(response.data)));
+      })
+      .catch(error => {
+        throw(error);
+        // dispatch(getPeersSuccess(convertPeers(nodes)))
+      })
+  };
+}
+
 export function showModal(json) {
    return {
     type: SHOW_MODAL,
@@ -167,6 +188,14 @@ function getPeersSuccess(data) {
     };
 }
 
+function getTopologySuccess(data) {
+  return {
+    type: GET_TOPOLOGY,
+    loading: false,
+    data,
+    };
+}
+
 function getTransactionsSuccess(data) {
   return {
     type: GET_TRANSACTIONS,
@@ -199,6 +228,13 @@ function transactionsLoading() {
 function peersLoading() {
   return {
     type: PEERS_LOADING,
+    loading: true,
+    };
+}
+
+function topologyLoading() {
+  return {
+    type: TOPOLOGY_LOADING,
     loading: true,
     };
 }
