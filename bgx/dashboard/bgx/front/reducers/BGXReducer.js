@@ -20,10 +20,12 @@ import {
   GET_STATE,
   GET_STATES,
   GET_BLOCKS,
+  GET_TOPOLOGY,
   BLOCKS_LOADING,
   STATES_LOADING,
   TRANSACTIONS_LOADING,
   PEERS_LOADING,
+  TOPOLOGY_LOADING,
   FILTER_PEERS,
   SHOW_MODAL
 } from '../actions/actions'
@@ -125,6 +127,25 @@ function peersReducer(state=initialPeersState, action) {
   return state;
 }
 
+function topologyReducer(state=initialState, action) {
+  switch(action.type) {
+    case GET_TOPOLOGY:
+      return Object.assign({}, state, {
+        data: action.data,
+        loading: false,
+      });
+
+    case TOPOLOGY_LOADING:
+      return Object.assign({}, state, {
+        loading: true,
+      });
+
+      default:
+        return state;
+  }
+  return state;
+}
+
 function modalReducer(state=initialModalState, action) {
   switch(action.type) {
     case SHOW_MODAL:
@@ -142,6 +163,7 @@ const BJXReducer = combineReducers({
   stateReducer,
   blocksReducer,
   modalReducer,
+  topologyReducer,
 })
 
 export default BJXReducer;
