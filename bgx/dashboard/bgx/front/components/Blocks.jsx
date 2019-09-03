@@ -39,7 +39,7 @@ class Blocks extends React.Component {
 
   render() {
     const that = this;
-    const {columns, data, loading} = this.props;
+    const {columns, data, loading, topology} = this.props;
     const {selectedBlock} = this.state;
 
     return (
@@ -52,12 +52,25 @@ class Blocks extends React.Component {
           </div>
         ) : (
             <div >
-              <Graph data={data} id='blocks_graph' title='Ledger'
-                btns={[{name: 'Update', handler: this.update}]}
-                size={{width: 1000, height: 800}}
-                selectedPeerIP={selectedBlock}
-                onSelect={(e) => this.selectBlock(e)}
-                loading={loading}/>
+              <div className='row'>
+                <div className='col-10'>
+                  <Graph data={data} id='blocks_graph' title='Ledger'
+                    btns={[{name: 'Update', handler: this.update}]}
+                    size={{width: 878, height: 800}}
+                    selectedPeerIP={selectedBlock}
+                    onSelect={(e) => this.selectBlock(e)}
+                    loading={loading}/>
+                </div>
+                <div className='col-2'>
+                  <Card id='topology' title='Topology'>
+                    {
+                      Object.keys(topology).map(key => {
+                        return (<div style={{backgroundColor: topology[key].color}}>{key}</div>);
+                      })
+                    }
+                  </Card>
+                </div>
+              </div>
 
               <div className="tab-offset">
                 <Card id='ledger' title='Ledger Data'
@@ -141,6 +154,7 @@ Blocks.defaultProps = {
 
 function mapStateToProps(store) {
   return {
+    topology: store.topologyReducer.data,
     data: store.blocksReducer.data,
     loading: store.blocksReducer.loading,
   };

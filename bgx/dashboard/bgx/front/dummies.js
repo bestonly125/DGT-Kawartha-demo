@@ -2357,7 +2357,7 @@ export const blocks = {
         "block_num": "23",
         "consensus": "RGV2bW9kZQ==",
         "previous_block_id": "085ab6bba4f5571d2fe49a917fae72836bf8710b2f35dcdd95f97b0796bab3876875bc7e7fd6b602d83bf67572a379409ec04fb3f7ceafde9b7cb77d30b98f1b",
-        "signer_public_key": "034ce6e94b86f58ffac9ee4371c8608b20beecf9c8503b56fa1e2c13447870fc5a",
+        "signer_public_key": "04f2068c16fe9fd0ffcc1da19fd98add24c89c6c5b6c080a1895ee53b565d5cf6c",
         "state_root_hash": "712a481467bf2a3612c60cf73fb134b0c51a8582ab8bfa217292988a08f59c45"
       },
       "header_signature": "f773d53b566ae25b99b242f2a22b46fb803cbedf48840e3e8300946c47024c062d18990113d549970d90b088aff2359c0980ecb15572f8572e5aa538443a2234"

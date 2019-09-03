@@ -16,17 +16,35 @@ import { trimHash, decode } from '../helpers/helper';
 import colorbrewer from 'colorbrewer';
 
 export function convertTopology(data) {
+  let c = {};
+  getColors(data, c)
+  //getChildren(data.children, keys);
 
- // let colors = colorbrewer.Set3[count+5];
-  let keys = ['genesis'];
+  let colors = colorbrewer.Set3[Object.keys(c).length+3];
 
-  getChildren(data.children, keys);
+  Object.keys(c).map((key,i) => {
+    c[key]['color'] = colors[i]
+  })
 
-  let colors = colorbrewer.Set3[keys.length];
+  return c;
+}
 
-  let r = {};
-  keys.forEach((k,i) => {r[k]= colors[i]})
-  return r;
+function getColors(data, out) {
+  if ('name' in data) {
+    let arr = []
+    Object.keys(data.children).map((key) =>
+      {
+        if ('cluster' in data.children[key]){
+          arr.push(key);
+          getColors(data.children[key].cluster, out);
+        }
+        else {
+          arr.push(key);
+        }
+      }
+    );
+    out[data.name] = {ids: arr};
+  }
 }
 
 function getChildren(node, colors) {

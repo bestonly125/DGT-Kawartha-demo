@@ -819,10 +819,19 @@ graph.data = cloneDeep(this.props.data);
     const { selectedFilters, filters, selectedPeerIP, blockColors } = this.props;
 
     if ('block_num' in d && d.block_num == 0) {
-        return blockColors['genesis'];
+        return '#17a2b8';
     }
     else if('signer_public_key' in d){
-        return blockColors[d.signer_public_key];
+        let id = d.signer_public_key;
+        let color = '#17a2b8'
+        Object.keys(blockColors).forEach(key => {
+            let block = blockColors[key];
+            if (block.ids.includes(id)){
+                color = block.color;
+                return;
+            }
+        });
+        return color;
     }
     else {
         // return '#17a2b8';
