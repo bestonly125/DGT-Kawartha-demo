@@ -14,13 +14,14 @@
 
 import axios from 'axios';
 
-import { nodes, transactions, states, state, blocks, topology } from '../dummies'
+import { nodes, transactions, states, state, blocks, topology, dagNest } from '../dummies'
 
 import { convertPeers } from '../logic/peers'
 import { convertTransactions } from '../logic/transactions'
 import { convertStates, convertState } from '../logic/state'
 import { convertBlocks } from '../logic/blocks'
 import { convertTopology } from '../logic/topology'
+import { convertDagNest } from '../logic/dagNest'
 
 export const apiUrl = location.origin;
 //const apiUrl = 'http://18.217.2.175:8003';
@@ -32,12 +33,14 @@ export const GET_STATE = 'GET_STATE';
 export const GET_BLOCKS = 'GET_BLOCKS';
 export const GET_PEERS = 'GET_PEERS';
 export const GET_TOPOLOGY = 'GET_TOPOLOGY';
+export const GET_DAG_NEST = 'GET_DAG_NEST';
 
 export const TRANSACTIONS_LOADING = 'TRANSACTIONS_LOADING';
 export const STATES_LOADING = 'STATES_LOADING';
 export const BLOCKS_LOADING = 'BLOCKS_LOADING';
 export const PEERS_LOADING = 'PEERS_LOADING';
 export const TOPOLOGY_LOADING = 'TOPOLOGY_LOADING';
+export const DAG_NEST_LOADING = 'DAG_NEST_LOADING';
 
 
 export const SHOW_MODAL = 'SHOW_MODAL';
@@ -152,6 +155,22 @@ export function getTopology() {
   };
 }
 
+export function getDagNest() {
+  return function(dispatch) {
+    dispatch(dagNestLoading());
+    // dispatch(getDagNestSuccess(convertDagNest(dagNest.data)));
+    return axios.get(`${apiUrl}/dag/nest`)
+      .then( response => {
+        dispatch(getDagNestSuccess(response.data.data));
+      })
+      .catch(error => {
+        throw(error);
+        // dispatch(getPeersSuccess(convertPeers(nodes)))
+      })
+  };
+}
+
+
 export function showModal(json) {
    return {
     type: SHOW_MODAL,
@@ -198,6 +217,14 @@ function getTopologySuccess(data) {
     };
 }
 
+function getDagNestSuccess(data) {
+  return {
+    type: GET_DAG_NEST,
+    loading: false,
+    data,
+    };
+}
+
 function getTransactionsSuccess(data) {
   return {
     type: GET_TRANSACTIONS,
@@ -237,6 +264,13 @@ function peersLoading() {
 function topologyLoading() {
   return {
     type: TOPOLOGY_LOADING,
+    loading: true,
+    };
+}
+
+function dagNestLoading() {
+  return {
+    type: DAG_NEST_LOADING,
     loading: true,
     };
 }

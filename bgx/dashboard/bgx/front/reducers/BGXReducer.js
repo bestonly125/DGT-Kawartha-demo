@@ -21,11 +21,13 @@ import {
   GET_STATES,
   GET_BLOCKS,
   GET_TOPOLOGY,
+  GET_DAG_NEST,
   BLOCKS_LOADING,
   STATES_LOADING,
   TRANSACTIONS_LOADING,
   PEERS_LOADING,
   TOPOLOGY_LOADING,
+  DAG_NEST_LOADING,
   FILTER_PEERS,
   SHOW_MODAL
 } from '../actions/actions'
@@ -146,6 +148,25 @@ function topologyReducer(state=initialState, action) {
   return state;
 }
 
+function dagNestReducer(state=initialState, action) {
+  switch(action.type) {
+    case GET_DAG_NEST:
+      return Object.assign({}, state, {
+        data: action.data,
+        loading: false,
+      });
+
+    case DAG_NEST_LOADING:
+      return Object.assign({}, state, {
+        loading: true,
+      });
+
+      default:
+        return state;
+  }
+  return state;
+}
+
 function modalReducer(state=initialModalState, action) {
   switch(action.type) {
     case SHOW_MODAL:
@@ -164,6 +185,7 @@ const BJXReducer = combineReducers({
   blocksReducer,
   modalReducer,
   topologyReducer,
+  dagNestReducer,
 })
 
 export default BJXReducer;
