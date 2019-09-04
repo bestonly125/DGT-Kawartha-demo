@@ -109,6 +109,7 @@ export function getState(address) {
 export function getBlocks() {
   return function(dispatch) {
     dispatch(blocksLoading());
+    // dispatch(getBlocksSuccess(convertBlocks(blocks.data)));
     new Promise((resolve, reject) => {
       nextPage(`${apiUrl}/blocks`,[],resolve, reject)
     }).then( data => {
@@ -139,6 +140,7 @@ export function getPeers() {
 export function getTopology() {
   return function(dispatch) {
     dispatch(topologyLoading());
+    // dispatch(getTopologySuccess(convertTopology(topology.data)));
     return axios.get(`${apiUrl}/topology`)
       .then( response => {
         dispatch(getTopologySuccess(convertTopology(response.data)));
