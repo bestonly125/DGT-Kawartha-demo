@@ -143,7 +143,7 @@ export function getTopology() {
     // dispatch(getTopologySuccess(convertTopology(topology.data)));
     return axios.get(`${apiUrl}/topology`)
       .then( response => {
-        dispatch(getTopologySuccess(convertTopology(response.data)));
+        dispatch(getTopologySuccess(convertTopology(response.data.data)));
       })
       .catch(error => {
         throw(error);
