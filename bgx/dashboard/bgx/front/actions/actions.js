@@ -161,7 +161,7 @@ export function getDagNest() {
     // dispatch(getDagNestSuccess(convertDagNest(dagNest.data)));
     return axios.get(`${apiUrl}/dag/nest`)
       .then( response => {
-        dispatch(getDagNestSuccess(response.data.data));
+        dispatch(getDagNestSuccess(convertDagNest(response.data.data)));
       })
       .catch(error => {
         throw(error);
