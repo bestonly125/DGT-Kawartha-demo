@@ -761,6 +761,9 @@ graph.data = cloneDeep(this.props.data);
         .each(function(d) {
           d3.select(this).selectAll('text').text(that.starterText(d.IP));
         })
+        .each(function(d) {
+          d3.select(this).selectAll('rect').attr('fill', that.starterColor(d.IP));
+        })
     });
 
     for (var i = 0; i < 50; i++) {
@@ -795,13 +798,20 @@ graph.data = cloneDeep(this.props.data);
     return d[key] != selectedFilters[key];
   }
 
+starterColor(ip) {
+    const { dagNest, blockColors } = this.props;
+    if (!Object.keys(dagNest).includes(ip)) {
+      return '#ff9ab3';
+    }
+    return blockColors[dagNest[ip].name].color;
+  }
+
   starterText(ip) {
     const { dagNest } = this.props;
     if (!Object.keys(dagNest).includes(ip)) {
       return '';
     }
-
-    return dagNest[ip].name;
+    return `${dagNest[ip].number}`;
   }
 
   checkNodeStarter(ip){
