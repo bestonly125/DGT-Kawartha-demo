@@ -35,7 +35,7 @@ import Main from './components/Main';
 
 import BGXReducer from './reducers/BGXReducer';
 
-import { getTransactions, getPeers, getStates, getBlocks, getTopology } from './actions/actions';
+import { getTransactions, getPeers, getStates, getBlocks, getTopology, getDagNest } from './actions/actions';
 
 library.add(faEnvelope);
 library.add(faChevronUp);
@@ -54,6 +54,7 @@ store.dispatch(getTransactions());
 store.dispatch(getPeers());
 store.dispatch(getStates());
 store.dispatch(getBlocks());
+store.dispatch(getDagNest());
 
 render(
   <Provider store={store}>

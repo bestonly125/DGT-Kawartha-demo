@@ -530,6 +530,23 @@ graph.data = cloneDeep(this.props.data);
         .attr('fill', '#ffffb3')
         .attr('stroke', '#b3b37d')
 
+      let starter = graph.node.append('g')
+        .attr('class', 'starter-data')
+        // .attr('display', 'none')
+        .attr('transform','translate(20,6)')
+
+      starter.append('rect')
+        .attr('class', 'starter-active')
+        .attr('x', 6)
+        .attr('y', -6)
+        .attr('width' , 10)
+        .attr('height' , 10)
+        .attr('fill', '#ff9ab3')
+        .attr('stroke', '#b3b37d')
+
+      starter.append('text')
+        .text('')
+        .attr('transform','translate(30,0)');
 
         graph.node.each(function(d) {
         if (that.state.hiddenNodes.includes(d.IP))
@@ -591,6 +608,7 @@ graph.data = cloneDeep(this.props.data);
       collapseChildren = node.selectAll('.collapse-children'),
       collapseParents = node.selectAll('.collapse-parents'),
       extra = node.selectAll('.extra-data'),
+      starter = node.selectAll('.starter-data'),
       bounds = {}
 
       if (!text[0].length) return;
@@ -734,6 +752,15 @@ graph.data = cloneDeep(this.props.data);
           .attr('fill',  d.node_state != 'active' ? '#ffffb3' : '#8dd3c7' )
           .attr('stroke',  d.node_state != 'active' ? '#b3b37d' : '#63948b' )
         })
+
+      starter
+        .attr('transform',`translate(${bounds.x1}, ${bounds.y1-12})`)
+        .attr('display',  function(d){
+          return that.checkNodeStarter(d.IP) ?  'block' : 'none'
+        })
+        .each(function(d) {
+          d3.select(this).selectAll('text').text(that.starterText(d.IP));
+        })
     });
 
     for (var i = 0; i < 50; i++) {
@@ -753,7 +780,6 @@ graph.data = cloneDeep(this.props.data);
     return this.state.collapsedParents.indexOf(ip) == -1;
   }
 
-
   checkNodeHidden(ip){
     return this.state.hiddenNodes.includes(ip) || this.state.hiddenParents.includes(ip);
   }
@@ -767,6 +793,20 @@ graph.data = cloneDeep(this.props.data);
     const key = Object.keys(selectedFilters)[0];
 
     return d[key] != selectedFilters[key];
+  }
+
+  starterText(ip) {
+    const { dagNest } = this.props;
+    if (!Object.keys(dagNest).includes(ip)) {
+      return '';
+    }
+
+    return dagNest[ip].name;
+  }
+
+  checkNodeStarter(ip){
+    const { dagNest } = this.props;
+    return Object.keys(dagNest).includes(ip)
   }
 
   preventCollisions() {
@@ -819,7 +859,7 @@ graph.data = cloneDeep(this.props.data);
     const { selectedFilters, filters, selectedPeerIP, blockColors } = this.props;
 
     if ('block_num' in d && d.block_num == 0) {
-        return '#17a2b8';
+        return '#ffa2b8';
     }
     else if('signer_public_key' in d){
         let id = d.signer_public_key;
@@ -1089,6 +1129,7 @@ Graph.defaultProps = {
 
 export default connect (
     state => ({
+      dagNest: state.dagNestReducer.data,
       blockColors: state.topologyReducer.data,
     }),
     null)(Graph);
