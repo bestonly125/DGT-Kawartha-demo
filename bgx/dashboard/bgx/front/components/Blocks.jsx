@@ -21,7 +21,7 @@ import Hash from './Hash';
 import Card from './Card';
 import Graph from './Graph';
 
-import { showModal, getBlocks } from '../actions/actions';
+import { showModal, getBlocks, getDagNest, getTopology } from '../actions/actions';
 
 class Blocks extends React.Component {
   constructor(props){
@@ -35,6 +35,9 @@ class Blocks extends React.Component {
 
   update(){
     store.dispatch(getBlocks());
+    store.dispatch(getDagNest());
+    store.dispatch(getTopology());
+
   }
 
   render() {
