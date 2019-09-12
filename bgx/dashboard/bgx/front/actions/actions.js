@@ -116,7 +116,6 @@ export function getBlocks() {
     new Promise((resolve, reject) => {
       nextPage(`${apiUrl}/blocks`,[],resolve, reject)
     }).then( data => {
-      console.log(data);
       dispatch(getBlocksSuccess(convertBlocks(data)));
     })
       .catch(error => {
@@ -170,6 +169,20 @@ export function getDagNest() {
   };
 }
 
+export function unhideBlocks(block) {
+  return function(dispatch, getState) {
+    let blocks = getState().blocksReducer.data;
+    let r = [];
+
+    blocks.forEach(b => {
+      if (b.IP == block.IP)
+        r = r.concat(b.hidden)
+      else
+        r.push(b);
+    })
+    dispatch(getBlocksSuccess(r));
+  };
+}
 
 export function showModal(json) {
    return {
