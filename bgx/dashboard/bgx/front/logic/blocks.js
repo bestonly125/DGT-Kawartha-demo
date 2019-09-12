@@ -15,7 +15,7 @@
 import { trimHash, decode } from '../helpers/helper';
 
 export function convertBlocks(data) {
-  return data.map((d) => {
+  let d= data.map((d) => {
     const prev = data.find(dd => dd.header_signature == d.header.previous_block_id);
 
     d.block_num = d.header.block_num;
@@ -32,4 +32,49 @@ export function convertBlocks(data) {
 
     return d;
   })
+  // return d;
+  return compactBlocks(d);
+}
+
+function compactBlocks(data) {
+  data = data.reverse();
+  let result = [];
+  data.forEach(d => {
+    if (d.dependedOnBy.length == 1 && d.depends.length == 1){
+      //find container
+      let thread = result.find(r => {
+        return 'hidden' in r && d.IP == r.dependedOnBy[0]
+      })
+      let isNew =  thread == undefined;
+
+      // else create container
+
+      if (isNew)
+        thread = {
+          depends: d.depends,
+          hidden: [],
+          header:{batch_ids: []},
+          tooltip: [],
+          name: '  .  .  .  ',
+        }
+      thread.hidden.push(d);
+      thread.dependedOnBy = d.dependedOnBy;
+      thread.IP = d.IP;
+      thread.tooltip.push(d.tooltip['1'])
+
+      if (isNew)
+        result.push(thread)
+    }
+    else {
+      result.push(d)
+    }
+  });
+
+  result = result.map(d => {
+    if ('hidden' in d && d.hidden.length == 1)
+      return d.hidden[0];
+    else
+      return d;
+  });
+  return result;
 }

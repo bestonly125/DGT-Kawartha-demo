@@ -28,6 +28,8 @@ import humanize from '../helpers/humanize';
 
 import LineSegment from '../helpers/LineSegment';
 
+import { unhideBlocks } from '../actions/actions';
+
 import Legend from './Legend';
 import Filters from './Filters';
 import Card from './Card';
@@ -281,9 +283,10 @@ graph.data = cloneDeep(this.props.data);
             if (this.checkNodeHidden(obj.IP))
               return;
             var link = {
-                source : graph.data.find(function r(i){return i.IP === depends}),
+                source : graph.data.find(i => i.IP === depends),
                 target : obj
             };
+            if (link.source == undefined) return;
             link.strength = (link.source.linkStrength || 1)
                           * (link.target.linkStrength || 1);
             graph.links.push(link);
@@ -689,6 +692,9 @@ graph.data = cloneDeep(this.props.data);
         .classed('filter-enable', function(d){
           return !that.checkNodeFiltered(d)
         })
+        .classed('has-sub-elements', function(d){
+          return !that.checkHasSubElements(d)
+        })
         .attr('display',  function(d){
           return that.checkNodeHidden(d.IP) ? 'none' : 'block'
         })
@@ -787,6 +793,10 @@ graph.data = cloneDeep(this.props.data);
     return this.state.hiddenNodes.includes(ip) || this.state.hiddenParents.includes(ip);
   }
 
+  checkHasSubElements(d){
+    return 'hidden' in d
+  }
+
   checkNodeFiltered(d){
     const { selectedFilters, filters } = this.props;
 
@@ -871,6 +881,10 @@ starterColor(ip) {
     if ('block_num' in d && d.block_num == 0) {
         return '#ffa2b8';
     }
+
+    if ('hidden' in d)
+        return 'gray'
+
     else if('signer_public_key' in d){
         let id = d.signer_public_key;
         let color = '#17a2b8'
@@ -1024,6 +1038,8 @@ starterColor(ip) {
   }
 
   selectObject(obj) {
+    if ('hidden' in obj)
+        store.dispatch(unhideBlocks(obj));
     this.props.onSelect(obj.IP)
   }
 
