@@ -28,8 +28,8 @@ class LineSegment {
     this.c = x1 * this.a + y1 * this.b;
 
     if (this.eq(this.a, 0) && this.eq(this.b, 0)) {
-      throw new Error(
-        'Cannot construct a LineSegment with two equal endpoints.');
+    //   throw new Error(
+    //     'Cannot construct a LineSegment with two equal endpoints.');
     }
   }
 

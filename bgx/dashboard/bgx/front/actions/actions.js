@@ -13,7 +13,7 @@
 // -----------------------------------------------------------------------------
 
 import axios from 'axios';
-
+import _ from 'lodash';
 import { nodes, transactions, states, state, blocks, topology, dagNest } from '../dummies'
 
 import { convertPeers } from '../logic/peers'
@@ -31,6 +31,8 @@ export const GET_TRANSACTIONS = 'GET_TRANSACTIONS';
 export const GET_STATES = 'GET_STATES';
 export const GET_STATE = 'GET_STATE';
 export const GET_BLOCKS = 'GET_BLOCKS';
+export const HIDE_BLOCKS = 'HIDE_BLOCKS';
+export const SHOW_BLOCKS = 'SHOW_BLOCKS';
 export const GET_PEERS = 'GET_PEERS';
 export const GET_TOPOLOGY = 'GET_TOPOLOGY';
 export const GET_DAG_NEST = 'GET_DAG_NEST';
@@ -169,19 +171,11 @@ export function getDagNest() {
   };
 }
 
-export function unhideBlocks(block) {
-  return function(dispatch, getState) {
-    let blocks = getState().blocksReducer.data;
-    let r = [];
-
-    blocks.forEach(b => {
-      if (b.IP == block.IP)
-        r = r.concat(b.hidden)
-      else
-        r.push(b);
-    })
-    dispatch(getBlocksSuccess(r));
-  };
+export function changeCollapseBlocks(block) {
+  return {
+    type: block.name == '+' ? HIDE_BLOCKS : SHOW_BLOCKS,
+    block: block,
+  }
 }
 
 export function showModal(json) {

@@ -28,7 +28,7 @@ import humanize from '../helpers/humanize';
 
 import LineSegment from '../helpers/LineSegment';
 
-import { unhideBlocks } from '../actions/actions';
+import { changeCollapseBlocks } from '../actions/actions';
 
 import Legend from './Legend';
 import Filters from './Filters';
@@ -280,7 +280,7 @@ graph.data = cloneDeep(this.props.data);
     for (var name in graph.data) {
         var obj = graph.data[name];
         obj.depends.forEach((depends) => {
-            if (this.checkNodeHidden(obj.IP))
+            if (this.checkNodeHidden(obj))
               return;
             var link = {
                 source : graph.data.find(i => i.IP === depends),
@@ -316,7 +316,7 @@ graph.data = cloneDeep(this.props.data);
     graph.categoryKeys = d3.keys(graph.categories);
 
     graph.nodeValues = d3.values(graph.data.filter((d) => {
-      return !this.checkNodeHidden(d.IP);
+      return !this.checkNodeHidden(d);
     }));
 
     graph.force = d3.layout.force()
@@ -455,9 +455,9 @@ graph.data = cloneDeep(this.props.data);
               }, 100);
           }
       })
-      .on('click', function(d) {
-        that.selectObject(d)
-      })
+      // .on('click', function(d) {
+      //   that.selectObject(d)
+      // })
 
         //add line to graph object
 
@@ -599,8 +599,8 @@ graph.data = cloneDeep(this.props.data);
 
     graph.line.each(function(d) {
       d3.select(this).attr('display', function(d){
-        return that.checkNodeHidden(d.target.IP) ||
-          that.checkNodeHidden(d.source.IP) ? 'none' : 'block'
+        return that.checkNodeHidden(d.target) ||
+          that.checkNodeHidden(d.source) ? 'none' : 'block'
       })
     });
 
@@ -646,7 +646,7 @@ graph.data = cloneDeep(this.props.data);
           return   that.checkNodeSelected(d.IP) ? 'bold' : 'normal'
         })
       .attr('display',  function(d){
-        return that.checkNodeHidden(d.IP) ? 'none' : 'block'
+        return that.checkNodeHidden(d) ? 'none' : 'block'
       })
 
 
@@ -696,7 +696,7 @@ graph.data = cloneDeep(this.props.data);
           return !that.checkHasSubElements(d)
         })
         .attr('display',  function(d){
-          return that.checkNodeHidden(d.IP) ? 'none' : 'block'
+          return that.checkNodeHidden(d) ? 'none' : 'block'
         })
         .attr('stroke', function(d) {
           return  that.colorForDarker(d)
@@ -723,7 +723,7 @@ graph.data = cloneDeep(this.props.data);
       collapseChildren
         .attr('transform',`translate(${bounds.x2-10}, ${bounds.y2+6})`)
         .attr('display', function(d){
-          return (!that.props.collapseFront || that.checkNodeHidden(d.IP)) ? 'none' : 'block'
+          return (!that.props.collapseFront || that.checkNodeHidden(d)) ? 'none' : 'block'
         })
 
       collapseChildren.selectAll('circle')
@@ -737,7 +737,7 @@ graph.data = cloneDeep(this.props.data);
       collapseParents
           .attr('transform',`translate(${bounds.x1 }, ${bounds.y2+6})`)
           .attr('display',  function(d){
-            return (!that.props.collapseBack || that.checkNodeHidden(d.IP)) ? 'none' : 'block'
+            return (!that.props.collapseBack || that.checkNodeHidden(d)) ? 'none' : 'block'
           })
 
       collapseParents.selectAll('circle')
@@ -751,7 +751,7 @@ graph.data = cloneDeep(this.props.data);
       extra
         .attr('transform',`translate(${bounds.x1}, ${bounds.y1-12})`)
         .attr('display',  function(d){
-          return d.node_state != undefined && !that.checkNodeHidden(d.IP) ?  'block' : 'none'
+          return d.node_state != undefined && !that.checkNodeHidden(d) ?  'block' : 'none'
         })
         .each(function(d) {
           d3.select(this).selectAll('.extra-active')
@@ -789,8 +789,8 @@ graph.data = cloneDeep(this.props.data);
     return this.state.collapsedParents.indexOf(ip) == -1;
   }
 
-  checkNodeHidden(ip){
-    return this.state.hiddenNodes.includes(ip) || this.state.hiddenParents.includes(ip);
+  checkNodeHidden(d){
+    return d.isHidden || this.state.hiddenNodes.includes(d.IP) || this.state.hiddenParents.includes(d.IP);
   }
 
   checkHasSubElements(d){
@@ -1038,9 +1038,11 @@ starterColor(ip) {
   }
 
   selectObject(obj) {
-    if ('hidden' in obj)
-        store.dispatch(unhideBlocks(obj));
-    this.props.onSelect(obj.IP)
+    if ('hidden' in obj){
+        store.dispatch(changeCollapseBlocks(obj));
+    }
+    else
+        this.props.onSelect(obj.IP)
   }
 
   deselectObject(doResize) {
@@ -1055,10 +1057,10 @@ starterColor(ip) {
   }
 
   componentDidUpdate(prevProps, prevState) {
-
     const { data, lastN, loading } = this.props;
 
-    if (JSON.stringify(data) !== JSON.stringify(prevProps.data)) {
+    if (data != prevProps.data) {
+        console.log('eeeee',data);
       this.drawGraph();
       this.redrawNodes();
       this.deselectObject();
