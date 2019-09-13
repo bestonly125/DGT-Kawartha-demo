@@ -20,6 +20,8 @@ import {
   GET_STATE,
   GET_STATES,
   GET_BLOCKS,
+  HIDE_BLOCKS,
+  SHOW_BLOCKS,
   GET_TOPOLOGY,
   GET_DAG_NEST,
   BLOCKS_LOADING,
@@ -74,6 +76,40 @@ function stateReducer(state=initialState, action) {
 
 function blocksReducer(state=initialState, action) {
   switch(action.type) {
+    case SHOW_BLOCKS:
+      return Object.assign({}, state, {
+        data: state.data.map(b =>{
+          if( action.block.hidden.includes(b.IP) ) b.isHidden = false;
+          return b;
+        }).map(b => {
+          if ( b.IP == action.block.IP ) {
+            b.name = action.block.name == '+' ? '-' : '+';
+            b.dependedOnBy = b.firstDependedOnBy;
+          }
+          if (b.IP == action.block.lastDependedOnBy) {
+            b.depends = action.block.preLastDependedOnBy;
+          }
+          return b;
+        }),
+        loading: false,
+      });
+    case HIDE_BLOCKS:
+      return Object.assign({}, state, {
+        data: state.data.map(b =>{
+          if( action.block.hidden.includes(b.IP) ) b.isHidden = true;
+          return b;
+        }).map(b => {
+          if ( b.IP == action.block.IP ) {
+            b.name = action.block.name == '+' ? '-' : '+';
+            b.dependedOnBy = b.lastDependedOnBy;
+          }
+          if (b.IP == action.block.lastDependedOnBy) {
+            b.depends = [action.block.IP];
+          }
+          return b;
+        }),
+        loading: false,
+      });
     case GET_BLOCKS:
       return Object.assign({}, state, {
         data: action.data,

@@ -13,7 +13,7 @@
 // -----------------------------------------------------------------------------
 
 import axios from 'axios';
-
+import _ from 'lodash';
 import { nodes, transactions, states, state, blocks, topology, dagNest } from '../dummies'
 
 import { convertPeers } from '../logic/peers'
@@ -31,6 +31,8 @@ export const GET_TRANSACTIONS = 'GET_TRANSACTIONS';
 export const GET_STATES = 'GET_STATES';
 export const GET_STATE = 'GET_STATE';
 export const GET_BLOCKS = 'GET_BLOCKS';
+export const HIDE_BLOCKS = 'HIDE_BLOCKS';
+export const SHOW_BLOCKS = 'SHOW_BLOCKS';
 export const GET_PEERS = 'GET_PEERS';
 export const GET_TOPOLOGY = 'GET_TOPOLOGY';
 export const GET_DAG_NEST = 'GET_DAG_NEST';
@@ -112,7 +114,7 @@ export function getState(address) {
 export function getBlocks() {
   return function(dispatch) {
     dispatch(blocksLoading());
-    dispatch(getBlocksSuccess(convertBlocks(blocks.data)));
+    // dispatch(getBlocksSuccess(convertBlocks(blocks.data)));
     new Promise((resolve, reject) => {
       nextPage(`${apiUrl}/blocks`,[],resolve, reject)
     }).then( data => {
@@ -170,25 +172,10 @@ export function getDagNest() {
 }
 
 export function changeCollapseBlocks(block) {
-  console.log('rrrr',block.name)
-  return function(dispatch, getState) {
-    let blocks = getState().blocksReducer.data;
-
-
-    let r = blocks.map(b =>{
-      if( block.hidden.includes(b.IP) ) b.isHidden = block.name == '+'
-      return b;
-    }).map(b => {
-      if ( b.IP == block.IP ) {
-
-        b.name = block.name == '+' ? '-' : '+';
-        console.log('rrrr',b)
-      }
-      return b;
-    })
-    console.log('eeee', r.map(d=> d.name));
-    dispatch(getBlocksSuccess(r));
-  };
+  return {
+    type: block.name == '+' ? HIDE_BLOCKS : SHOW_BLOCKS,
+    block: block,
+  }
 }
 
 export function showModal(json) {

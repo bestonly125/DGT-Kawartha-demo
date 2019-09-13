@@ -58,11 +58,17 @@ function compactBlocks(data) {
           header:{batch_ids: []},
           tooltip: [],
           name: '+',
-          IP: `sum${i}`
+          IP: `sum${i}`,
+          isHidden: false,
+          lastDependedOnBy: [d.IP],
+          preLastDependedOnBy: [d.IP],
+          firstDependedOnBy: [d.IP],
         }
         d.depends=[thread.IP]
       }
       thread.hidden.push(d.IP);
+      thread.lastDependedOnBy = d.dependedOnBy;
+      thread.preLastDependedOnBy = [d.IP];
       thread.tooltip.push(d.tooltip['1'])
 
       if (isNew)
