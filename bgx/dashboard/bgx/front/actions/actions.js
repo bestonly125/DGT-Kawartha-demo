@@ -112,7 +112,7 @@ export function getState(address) {
 export function getBlocks() {
   return function(dispatch) {
     dispatch(blocksLoading());
-    // dispatch(getBlocksSuccess(convertBlocks(blocks.data)));
+    dispatch(getBlocksSuccess(convertBlocks(blocks.data)));
     new Promise((resolve, reject) => {
       nextPage(`${apiUrl}/blocks`,[],resolve, reject)
     }).then( data => {
@@ -169,17 +169,24 @@ export function getDagNest() {
   };
 }
 
-export function unhideBlocks(block) {
+export function changeCollapseBlocks(block) {
+  console.log('rrrr',block.name)
   return function(dispatch, getState) {
     let blocks = getState().blocksReducer.data;
-    let r = [];
 
-    blocks.forEach(b => {
-      if (b.IP == block.IP)
-        r = r.concat(b.hidden)
-      else
-        r.push(b);
+
+    let r = blocks.map(b =>{
+      if( block.hidden.includes(b.IP) ) b.isHidden = block.name == '+'
+      return b;
+    }).map(b => {
+      if ( b.IP == block.IP ) {
+
+        b.name = block.name == '+' ? '-' : '+';
+        console.log('rrrr',b)
+      }
+      return b;
     })
+    console.log('eeee', r.map(d=> d.name));
     dispatch(getBlocksSuccess(r));
   };
 }

@@ -29,6 +29,7 @@ export function convertBlocks(data) {
     d.dependedOnBy = data.filter((dd) => {
         return dd.header.previous_block_id == d.header_signature;
       }).map((dd) => {return dd.header_signature});
+    d.isHidden = false;
 
     return d;
   })
@@ -39,42 +40,54 @@ export function convertBlocks(data) {
 function compactBlocks(data) {
   data = data.reverse();
   let result = [];
-  data.forEach(d => {
+  data.forEach((d,i) => {
     if (d.dependedOnBy.length == 1 && d.depends.length == 1){
       //find container
       let thread = result.find(r => {
-        return 'hidden' in r && d.IP == r.dependedOnBy[0]
+        return 'hidden' in r && r.hidden.includes(d.depends[0])
       })
       let isNew =  thread == undefined;
 
       // else create container
 
-      if (isNew)
+      if (isNew){
         thread = {
           depends: d.depends,
+          dependedOnBy: [d.IP],
           hidden: [],
           header:{batch_ids: []},
           tooltip: [],
-          name: '  .  .  .  ',
+          name: '+',
+          IP: `sum${i}`
         }
-      thread.hidden.push(d);
-      thread.dependedOnBy = d.dependedOnBy;
-      thread.IP = d.IP;
+        d.depends=[thread.IP]
+      }
+      thread.hidden.push(d.IP);
       thread.tooltip.push(d.tooltip['1'])
 
       if (isNew)
         result.push(thread)
     }
-    else {
-      result.push(d)
-    }
+
+    result.push(d)
   });
 
   result = result.map(d => {
-    if ('hidden' in d && d.hidden.length == 1)
-      return d.hidden[0];
+    if ('hidden' in d && d.hidden.length == 1){
+      //cut one block
+      let next = result.find(r => r.IP == d.dependedOnBy[0]);
+      let prev = result.find(r => r.IP == d.depends[0]);
+
+      next.depends = [prev.IP];
+      prev.dependedOnBy = [next.IP];
+
+      return;
+    }
+
+      // return d.hidden[0]
     else
       return d;
-  });
+  }).filter(r => r != undefined);
+
   return result;
 }

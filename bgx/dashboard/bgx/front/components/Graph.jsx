@@ -28,7 +28,7 @@ import humanize from '../helpers/humanize';
 
 import LineSegment from '../helpers/LineSegment';
 
-import { unhideBlocks } from '../actions/actions';
+import { changeCollapseBlocks } from '../actions/actions';
 
 import Legend from './Legend';
 import Filters from './Filters';
@@ -455,9 +455,9 @@ graph.data = cloneDeep(this.props.data);
               }, 100);
           }
       })
-      .on('click', function(d) {
-        that.selectObject(d)
-      })
+      // .on('click', function(d) {
+      //   that.selectObject(d)
+      // })
 
         //add line to graph object
 
@@ -1039,7 +1039,7 @@ starterColor(ip) {
 
   selectObject(obj) {
     if ('hidden' in obj)
-        store.dispatch(unhideBlocks(obj));
+        store.dispatch(changeCollapseBlocks(obj));
     this.props.onSelect(obj.IP)
   }
 
