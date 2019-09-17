@@ -596,7 +596,6 @@ graph.data = cloneDeep(this.props.data);
       }
     });
 
-
     graph.line.each(function(d) {
       d3.select(this).attr('display', function(d){
         return that.checkNodeHidden(d.target) ||
@@ -988,7 +987,6 @@ starterColor(ip) {
       this.hideParents(forHide,ip, ip)
     });
 
-
     this.setState({hiddenParents: forHide})
     this.forceUpdate();
   }
@@ -1060,7 +1058,6 @@ starterColor(ip) {
     const { data, lastN, loading } = this.props;
 
     if (data != prevProps.data) {
-        console.log('eeeee',data);
       this.drawGraph();
       this.redrawNodes();
       this.deselectObject();
@@ -1157,7 +1154,7 @@ Graph.defaultProps = {
 
 export default connect (
     state => ({
-      dagNest: state.dagNestReducer.data,
-      blockColors: state.topologyReducer.data,
+      dagNest: state.blocksReducer.dagNest,
+      blockColors: state.blocksReducer.topology,
     }),
     null)(Graph);

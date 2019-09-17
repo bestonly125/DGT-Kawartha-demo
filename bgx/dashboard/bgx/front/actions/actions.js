@@ -19,7 +19,6 @@ import { nodes, transactions, states, state, blocks, topology, dagNest } from '.
 import { convertPeers } from '../logic/peers'
 import { convertTransactions } from '../logic/transactions'
 import { convertStates, convertState } from '../logic/state'
-import { convertBlocks } from '../logic/blocks'
 import { convertTopology } from '../logic/topology'
 import { convertDagNest } from '../logic/dagNest'
 
@@ -112,18 +111,18 @@ export function getState(address) {
 }
 
 export function getBlocks() {
-  return function(dispatch) {
+  return dispatch => {
     dispatch(blocksLoading());
-    // dispatch(getBlocksSuccess(convertBlocks(blocks.data)));
-    new Promise((resolve, reject) => {
+
+    // return new Promise(resolve => {
+    //   resolve( dispatch(getBlocksSuccess(blocks.data)) );
+    // });
+
+    return new Promise((resolve, reject) => {
       nextPage(`${apiUrl}/blocks`,[],resolve, reject)
     }).then( data => {
-      dispatch(getBlocksSuccess(convertBlocks(data)));
+      dispatch(getBlocksSuccess(data));
     })
-      .catch(error => {
-        throw(error);
-        // dispatch(getBlocksSuccess(convertBlocks(blocks)));
-      })
   };
 }
 
@@ -144,7 +143,11 @@ export function getPeers() {
 export function getTopology() {
   return function(dispatch) {
     dispatch(topologyLoading());
-    // dispatch(getTopologySuccess(convertTopology(topology.data)));
+
+    // return new Promise(resolve => {
+    //   resolve( dispatch(getTopologySuccess(convertTopology(topology.data))));
+    // });
+
     return axios.get(`${apiUrl}/topology`)
       .then( response => {
         dispatch(getTopologySuccess(convertTopology(response.data.data)));
@@ -156,9 +159,32 @@ export function getTopology() {
   };
 }
 
+export function getBlocksAndTopology() {
+  return dispatch => {
+    return dispatch(getBlocks()).then(() => {
+      return dispatch(getTopology());
+    });
+  }
+}
+
+export function getBlocksAndTopologyAndDagNest() {
+  return dispatch => {
+    return dispatch(getBlocks()).then(() => {
+      return dispatch(getTopology()).then(() => {
+        return dispatch(getDagNest());
+      });
+    });
+  }
+}
+
 export function getDagNest() {
   return function(dispatch) {
     dispatch(dagNestLoading());
+
+    // return new Promise(resolve => {
+    //   resolve( dispatch(getDagNestSuccess(convertDagNest(dagNest.data)) ));
+    // });
+
     // dispatch(getDagNestSuccess(convertDagNest(dagNest.data)));
     return axios.get(`${apiUrl}/dag/nest`)
       .then( response => {

@@ -13,6 +13,7 @@
 // -----------------------------------------------------------------------------
 
 import { trimHash, decode } from '../helpers/helper';
+import cloneDeep from 'lodash/cloneDeep';
 
 export function convertBlocks(data) {
   let d= data.map((d) => {
@@ -33,15 +34,18 @@ export function convertBlocks(data) {
 
     return d;
   })
-  // return d;
-  return compactBlocks(d);
+  return d;
+  // return compactBlocks(d);
 }
 
-function compactBlocks(data) {
+export function compactBlocks(o_data, dagNest={}) {
+  if (o_data == undefined) return
+
+  let data = cloneDeep(o_data);
   data = data.reverse();
   let result = [];
   data.forEach((d,i) => {
-    if (d.dependedOnBy.length == 1 && d.depends.length == 1){
+    if (d.dependedOnBy.length == 1 && d.depends.length == 1 && !Object.keys(dagNest).includes(d.IP)){
       //find container
       let thread = result.find(r => {
         return 'hidden' in r && r.hidden.includes(d.depends[0])

@@ -21,7 +21,7 @@ import Hash from './Hash';
 import Card from './Card';
 import Graph from './Graph';
 
-import { showModal, getBlocks, getDagNest, getTopology } from '../actions/actions';
+import { showModal, getBlocksAndTopologyAndDagNest } from '../actions/actions';
 
 class Blocks extends React.Component {
   constructor(props){
@@ -34,10 +34,7 @@ class Blocks extends React.Component {
   }
 
   update(){
-    store.dispatch(getBlocks());
-    store.dispatch(getDagNest());
-    store.dispatch(getTopology());
-
+    store.dispatch(getBlocksAndTopologyAndDagNest());
   }
 
   render() {
@@ -157,8 +154,8 @@ Blocks.defaultProps = {
 
 function mapStateToProps(store) {
   return {
-    topology: store.topologyReducer.data,
-    data: store.blocksReducer.data,
+    topology: store.blocksReducer.topology,
+    data: store.blocksReducer.currentBlocks,
     loading: store.blocksReducer.loading,
   };
 }
