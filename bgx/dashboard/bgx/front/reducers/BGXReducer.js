@@ -35,6 +35,7 @@ import {
 } from '../actions/actions'
 import {addState} from '../logic/state'
 import {filterPeers} from '../logic/peers'
+import { convertBlocks, compactBlocks } from '../logic/blocks'
 
 const initialModalState = {
   json: {},
@@ -42,6 +43,12 @@ const initialModalState = {
 
 const initialState = {
   data: [],
+  loading: false,
+}
+
+const initialBlocks = {
+  topology: [],
+  dagNest: {},
   loading: false,
 }
 
@@ -74,11 +81,11 @@ function stateReducer(state=initialState, action) {
   return state;
 }
 
-function blocksReducer(state=initialState, action) {
+function blocksReducer(state=initialBlocks, action) {
   switch(action.type) {
     case SHOW_BLOCKS:
       return Object.assign({}, state, {
-        data: state.data.map(b =>{
+        currentBlocks: state.currentBlocks.map(b =>{
           if( action.block.hidden.includes(b.IP) ) b.isHidden = false;
           return b;
         }).map(b => {
@@ -95,7 +102,7 @@ function blocksReducer(state=initialState, action) {
       });
     case HIDE_BLOCKS:
       return Object.assign({}, state, {
-        data: state.data.map(b =>{
+        currentBlocks: state.currentBlocks.map(b =>{
           if( action.block.hidden.includes(b.IP) ) b.isHidden = true;
           return b;
         }).map(b => {
@@ -112,7 +119,20 @@ function blocksReducer(state=initialState, action) {
       });
     case GET_BLOCKS:
       return Object.assign({}, state, {
-        data: action.data,
+        originalBlocks: convertBlocks(action.data),
+        currentBlocks:  compactBlocks(convertBlocks(action.data)),
+        loading: false,
+      });
+    case GET_TOPOLOGY:
+      return Object.assign({}, state, {
+        topology: action.data,
+        currentBlocks:  compactBlocks(state.originalBlocks),
+        loading: false,
+      });
+    case GET_DAG_NEST:
+      return Object.assign({}, state, {
+        dagNest: action.data,
+        currentBlocks:  compactBlocks(state.originalBlocks, action.data),
         loading: false,
       });
 
@@ -165,44 +185,6 @@ function peersReducer(state=initialPeersState, action) {
   return state;
 }
 
-function topologyReducer(state=initialState, action) {
-  switch(action.type) {
-    case GET_TOPOLOGY:
-      return Object.assign({}, state, {
-        data: action.data,
-        loading: false,
-      });
-
-    case TOPOLOGY_LOADING:
-      return Object.assign({}, state, {
-        loading: true,
-      });
-
-      default:
-        return state;
-  }
-  return state;
-}
-
-function dagNestReducer(state=initialState, action) {
-  switch(action.type) {
-    case GET_DAG_NEST:
-      return Object.assign({}, state, {
-        data: action.data,
-        loading: false,
-      });
-
-    case DAG_NEST_LOADING:
-      return Object.assign({}, state, {
-        loading: true,
-      });
-
-      default:
-        return state;
-  }
-  return state;
-}
-
 function modalReducer(state=initialModalState, action) {
   switch(action.type) {
     case SHOW_MODAL:
@@ -220,8 +202,6 @@ const BJXReducer = combineReducers({
   stateReducer,
   blocksReducer,
   modalReducer,
-  topologyReducer,
-  dagNestReducer,
 })
 
 export default BJXReducer;

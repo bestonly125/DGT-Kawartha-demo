@@ -35,7 +35,7 @@ import Main from './components/Main';
 
 import BGXReducer from './reducers/BGXReducer';
 
-import { getTransactions, getPeers, getStates, getBlocks, getTopology, getDagNest } from './actions/actions';
+import { getTransactions, getPeers, getStates, getBlocks, getBlocksAndTopologyAndDagNest, getDagNest } from './actions/actions';
 
 library.add(faEnvelope);
 library.add(faChevronUp);
@@ -49,12 +49,13 @@ const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 window.store = createStore(BGXReducer,
   composeEnhancer(applyMiddleware(thunk)),);
 
-store.dispatch(getTopology());
-store.dispatch(getTransactions());
-store.dispatch(getPeers());
-store.dispatch(getStates());
-store.dispatch(getBlocks());
-store.dispatch(getDagNest());
+store.dispatch(getBlocksAndTopologyAndDagNest()).then(() => console.log('end'));
+
+// store.dispatch(getTransactions());
+// store.dispatch(getPeers());
+// store.dispatch(getStates());
+
+// store.dispatch(getDagNest());
 
 render(
   <Provider store={store}>
