@@ -51,11 +51,9 @@ window.store = createStore(BGXReducer,
 
 store.dispatch(getBlocksAndTopologyAndDagNest()).then(() => console.log('end'));
 
-// store.dispatch(getTransactions());
-// store.dispatch(getPeers());
-// store.dispatch(getStates());
-
-// store.dispatch(getDagNest());
+store.dispatch(getTransactions());
+store.dispatch(getPeers());
+store.dispatch(getStates());
 
 render(
   <Provider store={store}>

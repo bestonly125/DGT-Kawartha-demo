@@ -130,6 +130,10 @@ marker#end {
   text {
     fill: #000;
 
+    &.sum {
+      fill: #f8f9fa !important;
+      font-weight: bold;
+    }
 
     pointer-events: none;
 
