@@ -86,7 +86,12 @@ function blocksReducer(state=initialBlocks, action) {
     case SHOW_BLOCKS:
       return Object.assign({}, state, {
         currentBlocks: state.currentBlocks.map(b =>{
-          if( action.block.hidden.includes(b.IP) ) b.isHidden = false;
+          if( action.block.hidden.includes(b.IP) ) {
+            b.isHidden = false;
+            b.selected = true;
+          }
+          else b.selected = false;
+
           return b;
         }).map(b => {
           if ( b.IP == action.block.IP ) {
@@ -104,6 +109,8 @@ function blocksReducer(state=initialBlocks, action) {
       return Object.assign({}, state, {
         currentBlocks: state.currentBlocks.map(b =>{
           if( action.block.hidden.includes(b.IP) ) b.isHidden = true;
+          b.selected = false;
+
           return b;
         }).map(b => {
           if ( b.IP == action.block.IP ) {

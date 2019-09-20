@@ -332,24 +332,6 @@ graph.data = cloneDeep(this.props.data);
    function tick(e) {
         graph.numTicks++;
 
-        for (var name in graph.data) {
-            var obj = graph.data[name];
-
-            obj.positionConstraints.forEach(function(c) {
-                var w = c.weight * e.alpha;
-                if (!isNaN(c.x)) {
-                    obj.x = (c.x * w + obj.x * (1 - w));
-                }
-                if (!isNaN(c.y)) {
-                    obj.y = (c.y * w + obj.y * (1 - w));
-                }
-            });
-        }
-
-        if (graph.preventCollisions) {
-            //that.preventCollisions();
-        }
-
         graph.line
             .attr('x1', function(d) {
                 return d.source.x;
@@ -639,15 +621,23 @@ graph.data = cloneDeep(this.props.data);
         })
       .attr('text-anchor', 'middle')
       .attr('font-size', function(d) {
+          if (d.name == '+' || d.name == '-') {
+              let s = that.state.scale*2;
+              if (s < 12) s = 12;
+              return s;
+          }
           return  that.checkNodeSelected(d.IP) ? that.state.scale+1 : that.state.scale
         })
       .attr('font-weight', function(d) {
           return   that.checkNodeSelected(d.IP) ? 'bold' : 'normal'
         })
+      .attr('fill', function(d) {
+          return   '#f8f9fa';
+        })
+
       .attr('display',  function(d){
         return that.checkNodeHidden(d) ? 'none' : 'block'
       })
-
 
       text.classed('inactive', d.node_state !== 'active')
         .classed('filter-disable', function(d){
@@ -655,6 +645,9 @@ graph.data = cloneDeep(this.props.data);
         })
         .classed('filter-enable', function(d){
           return !that.checkNodeFiltered(d)
+        })
+        .classed('sum', function(d){
+          return d.name == "+" || d.name == "-";
         })
 
 
@@ -701,7 +694,7 @@ graph.data = cloneDeep(this.props.data);
           return  that.colorForDarker(d)
         })
         .attr('stroke-width', function(d) {
-          return   that.checkNodeSelected(d.IP) ? 3 : 1
+          return   that.checkNodeSelected(d) ? 4 : 1
         })
         .attr('fill', function(d) {
           return that.colorFor(d);
@@ -722,6 +715,7 @@ graph.data = cloneDeep(this.props.data);
       collapseChildren
         .attr('transform',`translate(${bounds.x2-10}, ${bounds.y2+6})`)
         .attr('display', function(d){
+            return 'none';
           return (!that.props.collapseFront || that.checkNodeHidden(d)) ? 'none' : 'block'
         })
 
@@ -736,6 +730,7 @@ graph.data = cloneDeep(this.props.data);
       collapseParents
           .attr('transform',`translate(${bounds.x1 }, ${bounds.y2+6})`)
           .attr('display',  function(d){
+            return 'none';
             return (!that.props.collapseBack || that.checkNodeHidden(d)) ? 'none' : 'block'
           })
 
@@ -776,8 +771,8 @@ graph.data = cloneDeep(this.props.data);
     }
   }
 
-  checkNodeSelected(ip){
-    return ip == this.props.selectedPeerIP;
+  checkNodeSelected(p){
+    return p.IP == this.props.selectedPeerIP || p.selected;
   }
 
   checkNodeIsCollapsed(ip){
@@ -882,7 +877,7 @@ starterColor(ip) {
     }
 
     if ('hidden' in d)
-        return 'gray'
+        return '#343a40';
 
     else if('signer_public_key' in d){
         let id = d.signer_public_key;
