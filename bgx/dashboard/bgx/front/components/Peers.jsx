@@ -69,7 +69,7 @@ class Peers extends React.Component {
   }
 
   render() {
-    const { data, filters, columns, loading } = this.props;
+    const { data, filters, columns, loading, topologyType } = this.props;
     const { selectedIP, selectedFilters, legend } = this.state;
 
     return (
@@ -82,7 +82,7 @@ class Peers extends React.Component {
               selectedPeerIP={selectedIP}
               selectedFilters={selectedFilters}
               id='peers_graph'
-              title='Node'
+              title={`Node [${topologyType}]`}
               onSelect={(e) => this.selectPeer(e)}
               onFilter={(e) => this.filterPeer(e)}
               loading={loading}/>
@@ -164,6 +164,7 @@ Peers.defaultProps = {
 function mapStateToProps(store) {
   return {
     data: store.blocksReducer.nodes.data,
+    topologyType: store.blocksReducer.nodes.topology,
     loading: store.blocksReducer.loading,
     filters:  store.blocksReducer.nodes.filters,
   };

@@ -13,7 +13,6 @@
 // -----------------------------------------------------------------------------
 
 import axios from 'axios';
-import _ from 'lodash';
 import { nodes, transactions, states, state, blocks, topology, dagNest } from '../dummies'
 
 import { convertPeers } from '../logic/peers'

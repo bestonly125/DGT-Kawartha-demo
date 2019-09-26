@@ -50,7 +50,10 @@ const initialBlocks = {
   topology: [],
   dagNest: {},
   loading: false,
-  nodes: {data: [],filters: {}}
+  nodes: {
+    data: [],
+    filters: {},
+    topology: 'static'}
 }
 
 const initialPeersState = {

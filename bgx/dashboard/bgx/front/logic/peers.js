@@ -14,6 +14,7 @@
 
 import colorbrewer from 'colorbrewer';
 import { trimHash } from '../helpers/helper';
+import cloneDeep from 'lodash/cloneDeep';
 
 export function convertPeers(data) {
   let r = [];
@@ -31,10 +32,36 @@ export function convertPeers(data) {
         "name": "Type"
       }
     ]
+   let rr = data.topology !== 'static' ?  hideInactive(r) : r;
   return {
-    data: r,
-    filters: convertFilters(groups, r),
+    data: rr,
+    filters: convertFilters(groups, rr),
+    topology: data.topology,
   }
+}
+
+function hideInactive(data){
+  let dd = cloneDeep(data)
+
+
+  dd = dd.map(d => {
+    if (d.node_state == 'inactive') {
+      d.dependedOnBy.map(ip => {
+        let parent = dd.find(d=> d.IP == ip);
+        let parentIndex= parent.depends.indexOf(ip);
+        parent.depends.splice(parentIndex, 1);
+        parent.depends.concat(d.depends);
+      })
+
+      d.depends.map(ip => {
+        let child = dd.find(d => d.IP == ip);
+        child.dependedOnBy = d.dependedOnBy;
+      })
+      return null;
+    }
+    return d;
+  });
+  return dd.filter(d => d != null);
 }
 
 function convertFilters(filters, d){
