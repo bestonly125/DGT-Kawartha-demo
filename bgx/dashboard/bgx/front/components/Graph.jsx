@@ -745,7 +745,7 @@ graph.data = cloneDeep(this.props.data);
       extra
         .attr('transform',`translate(${bounds.x1}, ${bounds.y1-12})`)
         .attr('display',  function(d){
-          return d.node_state != undefined && !that.checkNodeHidden(d) ?  'block' : 'none'
+          return d.node_state == 'active' && !that.checkNodeHidden(d) ?  'block' : 'none'
         })
         .each(function(d) {
           d3.select(this).selectAll('.extra-active')

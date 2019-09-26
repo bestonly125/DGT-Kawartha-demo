@@ -3628,7 +3628,7 @@ export const topology = {
     "name": "Genesis",
     "topology": "static"
   },
-  "link": "http://18.222.233.160:8003/topology"
+  "link": "http://18.222.233.160:8008/topology"
 }
 
 export const dagNest = {

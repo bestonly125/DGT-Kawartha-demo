@@ -138,9 +138,9 @@ Peers.defaultProps = {
   filters: [],
   columns: [
     {
-      id: 'ip',
-      Header: 'IP',
-      accessor: t => `${t.IP}:${t.port}`,
+      id: 'name',
+      Header: 'Name',
+      accessor: t => t.name,
       width: 180,
     },
     { id: 'node_state',
@@ -154,9 +154,9 @@ Peers.defaultProps = {
       accessor: t => humanize(t.node_type),
       width: 100,
     },
-    { id: 'public_key',
+    { id: 'IP',
       Header: 'Public Key',
-      accessor: t => <Hash hash={t.public_key} length={40}/>,
+      accessor: t => <Hash hash={t.IP} length={40}/>,
     },
   ],
 };
@@ -165,7 +165,7 @@ function mapStateToProps(store) {
   return {
     data: store.blocksReducer.nodes.data,
     loading: store.blocksReducer.loading,
-    filters:  []
+    filters:  store.blocksReducer.nodes.filters,
   };
 }
 
