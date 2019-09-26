@@ -114,9 +114,9 @@ export function getBlocks() {
   return dispatch => {
     dispatch(blocksLoading());
 
-    // return new Promise(resolve => {
-    //   resolve( dispatch(getBlocksSuccess(blocks.data)) );
-    // });
+    return new Promise(resolve => {
+      resolve( dispatch(getBlocksSuccess(blocks.data)) );
+    });
 
     return new Promise((resolve, reject) => {
       nextPage(`${apiUrl}/blocks`,[],resolve, reject)
@@ -144,9 +144,9 @@ export function getTopology() {
   return function(dispatch) {
     dispatch(topologyLoading());
 
-    // return new Promise(resolve => {
-    //   resolve( dispatch(getTopologySuccess(convertTopology(topology.data))));
-    // });
+    return new Promise(resolve => {
+      resolve( dispatch(getTopologySuccess(topology.data)));
+    });
 
     return axios.get(`${apiUrl}/topology`)
       .then( response => {
@@ -181,9 +181,9 @@ export function getDagNest() {
   return function(dispatch) {
     dispatch(dagNestLoading());
 
-    // return new Promise(resolve => {
-    //   resolve( dispatch(getDagNestSuccess(convertDagNest(dagNest.data)) ));
-    // });
+    return new Promise(resolve => {
+      resolve( dispatch(getDagNestSuccess(convertDagNest(dagNest.data)) ));
+    });
 
     return axios.get(`${apiUrl}/dag/nest`)
       .then( response => {
@@ -245,7 +245,8 @@ function getTopologySuccess(data) {
   return {
     type: GET_TOPOLOGY,
     loading: false,
-    data,
+    data: convertTopology(data),
+    nodesData: convertPeers(data)
     };
 }
 

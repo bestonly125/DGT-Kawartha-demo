@@ -50,6 +50,7 @@ const initialBlocks = {
   topology: [],
   dagNest: {},
   loading: false,
+  nodes: {data: [],filters: {}}
 }
 
 const initialPeersState = {
@@ -133,6 +134,7 @@ function blocksReducer(state=initialBlocks, action) {
     case GET_TOPOLOGY:
       return Object.assign({}, state, {
         topology: action.data,
+        nodes: action.nodesData,
         currentBlocks:  compactBlocks(state.originalBlocks),
         loading: false,
       });

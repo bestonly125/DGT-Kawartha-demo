@@ -18,8 +18,6 @@ import JSONPretty from 'react-json-pretty';
 
 import $ from 'jquery';
 
-import { trimHash } from '../helpers/helper';
-
 class Modal extends React.Component {
   componentDidUpdate() {
     const { json } = this.props.modal;

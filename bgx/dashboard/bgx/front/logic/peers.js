@@ -13,13 +13,14 @@
 // -----------------------------------------------------------------------------
 
 import colorbrewer from 'colorbrewer';
+import { trimHash } from '../helpers/helper';
 
 export function convertPeers(data) {
   let r = [];
-  convertNode(r, data.data.net_structure.parent_node );
+  convertNode(r, data );
   return {
     data: r,
-    filters: convertFilters(data.data.groups, r),
+    filters: [], //convertFilters(data.data.groups, r),
   }
 }
 
@@ -67,26 +68,27 @@ function convertFilters(filters, d){
 }
 
 function convertNode(r, node, parent_node = null){
+  let children = {};
 
-  let ch = [];
-  let parentRelation = [];
+  if (typeof node.cluster !== 'undefined') children = node.cluster.children;
+  else if (typeof node.children !== 'undefined') children = node.children;
 
-  if (parent_node != null)
-    parentRelation = [parent_node.IP];
+  let IP = typeof node.key == 'undefined' ? 'Genesis' : node.key;
+  node = {...node, IP: IP};
 
- if (typeof node.children !== 'undefined'){
-    ch = node.children;
+  let ch = Object.keys(children).map(key => {return {...children[key], key:key };});
 
-    ch.forEach((j) => {
-      convertNode(r, j, node);
-    })
-  }
+  ch.forEach(child => convertNode(r, child, node) );
+
+  let n = node.endpoint;
+  if (n == undefined) n = node.key;
+  if (n == undefined) n = 'Genesis';
 
   let legend = [];
 
   legend.push({"Main": {
-    'Public Key': node.public_key,
-    'Address': `${node.IP}:${node.port}`,
+    'Public Key': IP,
+    'Address': n,
     'State': node.node_state,
     'Type': node.node_type,
     'Date Created': '15.04.2018',
@@ -98,7 +100,7 @@ function convertNode(r, node, parent_node = null){
   }})
 
   let keys_for_legend = Object.keys(node).filter((k) => {
-  return !['IP', 'port', 'node_type', 'node_type_desc', 'node_state', 'public_key',
+  return !['IP', 'name', 'topology', 'port', 'node_type', 'node_type_desc', 'node_state', 'public_key', 'type', 'key', 'delegates', 'endpoint',
             'children'].includes(k) })
 
   keys_for_legend.forEach((k) => {
@@ -107,27 +109,25 @@ function convertNode(r, node, parent_node = null){
     legend.push( r );
     })
 
+  let tooltip = {'name': n};
+
+  if (typeof node.type != 'undefined') tooltip.type = node.type;
+  if (typeof node.node_state != 'undefined') tooltip.node_state = node.node_state;
+
   r.push({
-      name: node.IP,
+      name: trimHash(n),
       IP: node.IP,
       port: node.port,
       node_state: node.node_state,
       node_type: node.node_type,
       public_key:  node.public_key,
-      type: node.IP,
-      dependedOnBy:  ch.map((j) => {
-        return j.IP;
-        }),
-      depends: parentRelation,
+      type: node.name,
+      dependedOnBy:  ch.map(j => j.IP),
+      depends: parent_node != null ? [parent_node.IP] : [],
       legend: legend,
-      tooltip: {
-        2: node.node_type,
-        1: node.node_state,
-        'IP': node.IP,
-      },
+      tooltip: tooltip,
       filtered: false,
       raw_data: node,
     });
-
   return r;
 }

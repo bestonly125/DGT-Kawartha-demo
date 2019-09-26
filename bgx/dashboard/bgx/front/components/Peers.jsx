@@ -163,10 +163,9 @@ Peers.defaultProps = {
 
 function mapStateToProps(store) {
   return {
-    data: store.peersReducer.data.data,
-    loading: store.peersReducer.loading,
-    filters:  store.peersReducer.data.length == 0 ?
-      [] : store.peersReducer.data.filters.filters,
+    data: store.blocksReducer.nodes.data,
+    loading: store.blocksReducer.loading,
+    filters:  []
   };
 }
 
