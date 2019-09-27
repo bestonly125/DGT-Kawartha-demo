@@ -629,7 +629,7 @@ graph.data = cloneDeep(this.props.data);
           return  that.checkNodeSelected(d.IP) ? that.state.scale+1 : that.state.scale
         })
       .attr('font-weight', function(d) {
-          return   that.checkNodeSelected(d.IP) ? 'bold' : 'normal'
+          return   'bold'; //that.checkNodeSelected(d.IP) ? 'normal' : 'bold'
         })
       .attr('fill', function(d) {
           return   '#f8f9fa';
@@ -745,12 +745,12 @@ graph.data = cloneDeep(this.props.data);
       extra
         .attr('transform',`translate(${bounds.x1}, ${bounds.y1-12})`)
         .attr('display',  function(d){
-          return d.node_state == 'active' && !that.checkNodeHidden(d) ?  'block' : 'none'
+          return !that.checkNodeHidden(d) && d.node_state ?  'block' : 'none'
         })
         .each(function(d) {
           d3.select(this).selectAll('.extra-active')
-          .attr('fill',  d.node_state != 'active' ? '#ffffb3' : '#8dd3c7' )
-          .attr('stroke',  d.node_state != 'active' ? '#b3b37d' : '#63948b' )
+          .attr('fill',  that.colorForFilter('node_state', d.node_state))
+          .attr('stroke',  '#333' )
         })
 
       starter
@@ -869,8 +869,19 @@ starterColor(ip) {
     }
   }
 
+  colorForFilter(filter, value) {
+      const {filters} = this.props;
+
+      if (filters.length < 1)
+          return '#fff';
+
+      return filters.find(f => f.field == filter).list[value];
+  }
+
   colorFor(d) {
     const { selectedFilters, filters, selectedPeerIP, blockColors } = this.props;
+
+     const baseColor = '#8dd3c7';//'#17a2b8';
 
     if ('block_num' in d && d.block_num == 0) {
         return '#ffa2b8';
@@ -881,7 +892,7 @@ starterColor(ip) {
 
     else if('signer_public_key' in d){
         let id = d.signer_public_key;
-        let color = '#17a2b8'
+        let color = baseColor;
         Object.keys(blockColors).forEach(key => {
             let block = blockColors[key];
             if (block.ids.includes(id)){
@@ -899,7 +910,7 @@ starterColor(ip) {
     //   return '#ffc107'
 
         if (null == selectedFilters || Object.keys(selectedFilters).length == 0 )
-          return '#17a2b8';
+          return baseColor;
 
         const key = Object.keys(selectedFilters)[0]
 

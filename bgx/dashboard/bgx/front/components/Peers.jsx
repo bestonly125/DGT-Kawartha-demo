@@ -27,7 +27,7 @@ import Hash from './Hash';
 
 import ReactTable from 'react-table';
 
-import { showModal, getPeers } from '../actions/actions';
+import { showModal, getTopology } from '../actions/actions';
 
 class Peers extends React.Component {
   constructor(props){
@@ -42,7 +42,7 @@ class Peers extends React.Component {
   }
 
   update(){
-    store.dispatch(getPeers());
+    store.dispatch(getTopology());
   }
 
   selectPeer(ip) {
