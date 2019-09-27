@@ -13,14 +13,55 @@
 // -----------------------------------------------------------------------------
 
 import colorbrewer from 'colorbrewer';
+import { trimHash } from '../helpers/helper';
+import cloneDeep from 'lodash/cloneDeep';
 
 export function convertPeers(data) {
   let r = [];
-  convertNode(r, data.data.net_structure.parent_node );
+  convertNode(r, data );
+
+  let groups =[
+      {
+        "field": "node_state",
+        "list": [],
+        "name": "Activity"
+      },
+      {
+        "field": "node_type",
+        "list": [],
+        "name": "Type"
+      }
+    ]
+   let rr = data.topology !== 'static' ?  hideInactive(r) : r;
   return {
-    data: r,
-    filters: convertFilters(data.data.groups, r),
+    data: rr,
+    filters: convertFilters(groups, rr),
+    topology: data.topology,
   }
+}
+
+function hideInactive(data){
+  let dd = cloneDeep(data)
+
+
+  dd = dd.map(d => {
+    if (d.node_state == 'inactive') {
+      d.dependedOnBy.map(ip => {
+        let parent = dd.find(d=> d.IP == ip);
+        let parentIndex= parent.depends.indexOf(ip);
+        parent.depends.splice(parentIndex, 1);
+        parent.depends.concat(d.depends);
+      })
+
+      d.depends.map(ip => {
+        let child = dd.find(d => d.IP == ip);
+        child.dependedOnBy = d.dependedOnBy;
+      })
+      return null;
+    }
+    return d;
+  });
+  return dd.filter(d => d != null);
 }
 
 function convertFilters(filters, d){
@@ -43,12 +84,8 @@ function convertFilters(filters, d){
   })
   let colors = colorbrewer.Set3[count+5];
 
-  console.log('color', colors)
-
   colors[1] = '#8dd3c7';
   colors[0] = '#ffffb3';
-
-  console.log('color2', colors)
 
   let r = 0;
 
@@ -63,71 +100,66 @@ function convertFilters(filters, d){
   let i={};
   ff.map((f) => { i[f] = colors[r++]; return i});
 
-  return { filters: f, };
+  return  f;
 }
 
 function convertNode(r, node, parent_node = null){
+  let children = {};
 
-  let ch = [];
-  let parentRelation = [];
+  if (typeof node.cluster !== 'undefined') children = node.cluster.children;
+  else if (typeof node.children !== 'undefined') children = node.children;
 
-  if (parent_node != null)
-    parentRelation = [parent_node.IP];
+  let IP = typeof node.key == 'undefined' ? 'Genesis' : node.key;
+  node = {...node, IP: IP};
 
- if (typeof node.children !== 'undefined'){
-    ch = node.children;
+  let ch = Object.keys(children).map(key => {return {...children[key], key:key };});
 
-    ch.forEach((j) => {
-      convertNode(r, j, node);
-    })
-  }
+  ch.forEach(child => convertNode(r, child, node) );
 
-  let legend = [];
+  let n = node.endpoint;
+  if (n == undefined) n = trimHash(node.key);
+  if (n == '') n = 'Genesis';
 
-  legend.push({"Main": {
-    'Public Key': node.public_key,
-    'Address': `${node.IP}:${node.port}`,
-    'State': node.node_state,
-    'Type': node.node_type,
+  let main = {
     'Date Created': '15.04.2018',
     'Date Updated': '17.08.2018',
     'KYCKey': '0ABD7E',
     'SLA': 'blocked',
     'Cluster': 'eea98-0ABD7E-ff7ea-0BCDA',
     'Transactions Count' : 42,
-  }})
+  }
+  if (typeof node.endpoint !== 'undefined') main.Address = node.endpoint;
+  if (typeof node.node_state !== 'undefined') main.State = node.endpoint;
+  if (typeof node.node_type !== 'undefined') main.Type = node.endpoint;
+  if (typeof node.key !== 'undefined') main.PublicKey = node.key
+  // let keys_for_legend = Object.keys(node).filter((k) => {
+  // return !['IP', 'name', 'topology', 'port', 'node_type', 'node_type_desc', 'node_state', 'public_key', 'type', 'key', 'delegates', 'endpoint',
+  //           'children'].includes(k) })
 
-  let keys_for_legend = Object.keys(node).filter((k) => {
-  return !['IP', 'port', 'node_type', 'node_type_desc', 'node_state', 'public_key',
-            'children'].includes(k) })
+  // keys_for_legend.forEach((k) => {
+  //   let r = {};
+  //   r[k] = node[k];
+  //   legend.push( r );
+  //   })
 
-  keys_for_legend.forEach((k) => {
-    let r = {};
-    r[k] = node[k];
-    legend.push( r );
-    })
+  let tooltip = {'name': n};
+
+  if (typeof node.type != 'undefined') tooltip.type = node.type;
+  if (typeof node.node_state != 'undefined') tooltip.node_state = node.node_state;
 
   r.push({
-      name: node.IP,
+      name: n,
       IP: node.IP,
       port: node.port,
-      node_state: node.node_state,
-      node_type: node.node_type,
+      node_state: typeof node.node_state !== 'undefined' ? (node.node_state !== 'nosync' ? 'active' : 'nosync') : 'inactive',
+      node_type: typeof node.type !== 'undefined' ? node.type : 'genesis',
       public_key:  node.public_key,
-      type: node.IP,
-      dependedOnBy:  ch.map((j) => {
-        return j.IP;
-        }),
-      depends: parentRelation,
-      legend: legend,
-      tooltip: {
-        2: node.node_type,
-        1: node.node_state,
-        'IP': node.IP,
-      },
+      dependedOnBy:  ch.map(j => j.IP),
+      depends: parent_node != null ? [parent_node.IP] : [],
+      legend: [{"Main": main}],
+      tooltip: tooltip,
       filtered: false,
       raw_data: node,
     });
-
   return r;
 }

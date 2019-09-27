@@ -19,6 +19,8 @@ const DICT = {
   aux: 'Secondary',
   arbiter: 'Arbiter',
   leader: 'Leader',
+  genesis: 'Genesis',
+  nosync: 'Nosync',
   //------------------------
   node_type: 'Type',
   node_state: 'Activity',

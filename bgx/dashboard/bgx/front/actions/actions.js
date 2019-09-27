@@ -13,7 +13,6 @@
 // -----------------------------------------------------------------------------
 
 import axios from 'axios';
-import _ from 'lodash';
 import { nodes, transactions, states, state, blocks, topology, dagNest } from '../dummies'
 
 import { convertPeers } from '../logic/peers'
@@ -145,12 +144,12 @@ export function getTopology() {
     dispatch(topologyLoading());
 
     // return new Promise(resolve => {
-    //   resolve( dispatch(getTopologySuccess(convertTopology(topology.data))));
+    //   resolve( dispatch(getTopologySuccess(topology.data)));
     // });
 
     return axios.get(`${apiUrl}/topology`)
       .then( response => {
-        dispatch(getTopologySuccess(convertTopology(response.data.data)));
+        dispatch(getTopologySuccess(response.data.data));
       })
       .catch(error => {
         throw(error);
@@ -245,7 +244,8 @@ function getTopologySuccess(data) {
   return {
     type: GET_TOPOLOGY,
     loading: false,
-    data,
+    data: convertTopology(data),
+    nodesData: convertPeers(data)
     };
 }
 

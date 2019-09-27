@@ -49,10 +49,9 @@ const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 window.store = createStore(BGXReducer,
   composeEnhancer(applyMiddleware(thunk)),);
 
-store.dispatch(getBlocksAndTopologyAndDagNest()).then(() => console.log('end'));
+store.dispatch(getBlocksAndTopologyAndDagNest());
 
 store.dispatch(getTransactions());
-store.dispatch(getPeers());
 store.dispatch(getStates());
 
 render(
