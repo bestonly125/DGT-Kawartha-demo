@@ -19,7 +19,7 @@ const DICT = {
   aux: 'Secondary',
   arbiter: 'Arbiter',
   leader: 'Leader',
-  genesis: 'Genesis',
+  cluster: 'Cluster',
   nosync: 'Nosync',
   //------------------------
   node_type: 'Type',

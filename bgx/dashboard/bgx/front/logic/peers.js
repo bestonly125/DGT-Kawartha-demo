@@ -20,6 +20,8 @@ export function convertPeers(data) {
   let r = [];
   convertNode(r, data );
 
+  console.log('rrr',r);
+
   let groups =[
       {
         "field": "node_state",
@@ -89,15 +91,19 @@ function convertFilters(filters, d){
 
   let r = 0;
 
+  console.log('f',f);
+
   f.forEach((f) => {
     let arr = {};
-    f.list.forEach((i) => {
+    f.list.sort().forEach((i) => {
       return arr[i] = colors[r++];
     })
     f.list = arr;
   })
 
   let i={};
+
+
   ff.map((f) => { i[f] = colors[r++]; return i});
 
   return  f;
@@ -106,19 +112,29 @@ function convertFilters(filters, d){
 function convertNode(r, node, parent_node = null){
   let children = {};
 
-  if (typeof node.cluster !== 'undefined') children = node.cluster.children;
-  else if (typeof node.children !== 'undefined') children = node.children;
+  // if (typeof node.cluster !== 'undefined') children = node.cluster.children;
+  if (typeof node.children !== 'undefined') children = node.children;
 
-  let IP = typeof node.key == 'undefined' ? 'Genesis' : node.key;
+  let IP = typeof node.key == 'undefined' ? node.name : node.key;
   node = {...node, IP: IP};
+
+
+  if (typeof node.cluster !== 'undefined')
+    convertNode(r, node.cluster, node);
+
 
   let ch = Object.keys(children).map(key => {return {...children[key], key:key };});
 
   ch.forEach(child => convertNode(r, child, node) );
-
-  let n = node.endpoint;
+  let n = undefined
+  try {
+    n = node.endpoint.match(/:\/\/([^:]*)/)[1];
+  }
+  catch {
+    n = node.endpoint;
+  }
   if (n == undefined) n = trimHash(node.key);
-  if (n == '') n = 'Genesis';
+  if (n == '') n = node.name;
 
   let main = {
     'Date Created': '15.04.2018',
@@ -152,7 +168,7 @@ function convertNode(r, node, parent_node = null){
       IP: node.IP,
       port: node.port,
       node_state: typeof node.node_state !== 'undefined' ? (node.node_state !== 'nosync' ? 'active' : 'nosync') : 'inactive',
-      node_type: typeof node.type !== 'undefined' ? node.type : 'genesis',
+      node_type: typeof node.type !== 'undefined' ? node.type : 'cluster',
       public_key:  node.public_key,
       dependedOnBy:  ch.map(j => j.IP),
       depends: parent_node != null ? [parent_node.IP] : [],

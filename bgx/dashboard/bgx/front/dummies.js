@@ -3622,7 +3622,8 @@ export const topology = {
         "type": "plink"
       },
       "037fc5bd5d094e5efd7b416228711d42b74893ef921ea836531122eb7dc00291a9": {
-        "type": "plink"
+        "type": "plink",
+        "node_state": 'active'
       }
     },
     "name": "Genesis",
