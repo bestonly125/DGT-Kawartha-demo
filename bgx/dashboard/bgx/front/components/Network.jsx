@@ -28,21 +28,21 @@ class Network extends React.Component {
   }
 
   render() {
-    const { nodes_count, transactions_count, transactions } = this.props;
+    const { nodes_count, transactions_count, transactions, cluster } = this.props;
 
-    let success_transactions = 0;
+    let success_transactions = transactions_count;
     let failed_transactions = 0;
 
-    if (transactions_count > 0){
-      if (transactions_count < 5){
-        success_transactions = 4;
-        failed_transactions = 0;
-      }
-      else {
-        success_transactions = transactions_count - 4;
-        failed_transactions = 4;
-      }
-    }
+    // if (transactions_count > 0){
+    //   if (transactions_count < 5){
+    //     success_transactions = 4;
+    //     failed_transactions = 0;
+    //   }
+    //   else {
+    //     success_transactions = transactions_count - 4;
+    //     failed_transactions = 4;
+    //   }
+    // }
 
     let generatedData = [],
     generatedLabels = [];
@@ -85,10 +85,10 @@ class Network extends React.Component {
 
     transactions.forEach((t) =>
       {
-        if (t.decoded_data.num_bgt === undefined || t.decoded_data.Verb != 'transfer')
+        if (t.decoded_data.Value === undefined) // || t.decoded_data.Verb != 'transfer')
           return;
 
-        generatedData2.push(t.decoded_data.num_bgt);
+        generatedData2.push(t.decoded_data.Value);
       }
     )
 
@@ -144,7 +144,7 @@ class Network extends React.Component {
           <div className='row'>
             <div className='col-8'>
               <p>
-                <strong>Cluster:</strong>&nbsp;<span className='text-secondary'>eea98-0ABD7E-ff7ea-0BCDA </span>
+                <strong>Cluster:</strong>&nbsp;<span className='text-secondary'>{cluster} </span>
               </p>
               <p>
                 <strong>Node count:</strong>&nbsp;<span className='text-secondary'>{nodes_count}</span>
@@ -156,10 +156,6 @@ class Network extends React.Component {
                 <span className='text-secondary'>/</span>
                 <span className='text-warning'>{failed_transactions}</span>
                 <span className='text-secondary'>)</span>
-              </p>
-              <p>
-                <strong>DAG size:</strong>&nbsp;
-                <span className='text-secondary'>{transactions_count}&nbsp;15Mb</span>
               </p>
              </div>
              <div className='col-4'>
@@ -225,8 +221,8 @@ Network.defaultProps = {
 
 function mapStateToProps(store) {
   return {
-    nodes_count: store.peersReducer.data.data == undefined ?
-                  0 : store.peersReducer.data.data.length,
+    cluster: store.blocksReducer.nodes.identity.Cluster,
+    nodes_count: store.blocksReducer.nodes.data.length,
     transactions_count: store.transactionReducer.data == undefined ?
                   0 : store.transactionReducer.data.length,
     transactions: store.transactionReducer.data,

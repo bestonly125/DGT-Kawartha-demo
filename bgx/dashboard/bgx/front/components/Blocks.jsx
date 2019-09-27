@@ -76,7 +76,7 @@ class Blocks extends React.Component {
                 <Card id='ledger' title='Ledger Data'
                   btns={[{name: 'Update', handler: this.update}]}
                   loading={loading}>
-                  <ReactTable data={data}
+                  <ReactTable data={data.filter(d => !('hidden' in d))}
                   defaultPageSize={10}
                   minRows={0}
                   columns={columns}

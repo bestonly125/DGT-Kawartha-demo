@@ -3598,6 +3598,15 @@ export const state = {
 
 export const topology = {
   "data": {
+    "Identity": {
+      "Cluster": "Genesis",
+      "Genesis": "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0",
+      "IP": "tcp://validator-bgx-1:8800",
+      "KYCKey": "0ABD7E",
+      "Leader": "UNDEF",
+      "Parent": "UNDEF",
+      "PubKey": "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0"
+    },
     "children": {
       "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0": {
         "cluster": {
@@ -3605,7 +3614,7 @@ export const topology = {
             "034ce6e94b86f58ffac9ee4371c8608b20beecf9c8503b56fa1e2c13447870fc5a": {
               "delegate": true,
               "endpoint": "tcp://validator-bgx-2:8801",
-              "node_state": "nosync",
+              "node_state": "active",
               "type": "leader"
             },
             "03a672007f64d01f63f6502d3b0522d29c1bdc27f8dab712947360807771a29e1a": {
@@ -3622,11 +3631,11 @@ export const topology = {
         "type": "plink"
       },
       "037fc5bd5d094e5efd7b416228711d42b74893ef921ea836531122eb7dc00291a9": {
-        "type": "plink",
-        "node_state": 'active'
+        "type": "plink"
       }
     },
     "name": "Genesis",
+    "sync": false,
     "topology": "static"
   },
   "link": "http://18.222.233.160:8008/topology"

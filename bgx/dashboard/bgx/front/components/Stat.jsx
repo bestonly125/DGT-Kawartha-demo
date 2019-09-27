@@ -14,26 +14,25 @@
 
 import React from 'react';
 import { apiUrl } from '../actions/actions';
+import { connect } from 'react-redux';
 
 import Card from './Card';
 
 class Stat extends React.Component {
   render() {
+    const {identity, network} = this.props;
     const data = [
       [
-        ['PubKey', 'fbb1b73c4f0bda4f67dca266ce6ef42f520eea98'],
-        ['KYCKey', '0ABD7E'],
-        ['IP', apiUrl],
+        ['PubKey', identity.PubKey],
+        ['KYCKey', identity.PubKey],
+        ['IP', identity.IP],
+        ['Name', network],
       ],
       [
-        ['Name', 'BGX TEST Network'],
-        ['Cluster', 'eea98-0ABD7E-ff7ea-0BCDA'],
-        ['Cluster Name', 'BGX-GROUP'],
-      ],
-      [
-        ['Parent Node', 'fbb1b73c4f0bda4f67dca266ce6ef42f520eea98'],
-        ['Leader', 'fbb1b73c4f0bda4f67dca266ce6ef42f520eea98'],
-        ['Genesis', 'fbb1b73c4f0bda4f67dca266ce6ef42f520eea98'],
+        ['Cluster Name', identity.Cluster],
+        ['Parent Node',  identity.Parent],
+        ['Leader', identity.Leader],
+        ['Genesis', identity.Genesis]
       ],
     ];
 
@@ -44,9 +43,12 @@ class Stat extends React.Component {
             {
               data.map((dd) => {
                 return (
-                  <div key={dd[0][0]} className='col-4'>
+                  <div key={dd[0][0]} className='col-6'>
                     {
                       dd.map((d) => {
+                        if (typeof d[1] == 'undefined')
+                          return null;
+
                         return (
                           <p key={d[0]}>
                             <strong>{d[0]}:</strong>
@@ -66,4 +68,9 @@ class Stat extends React.Component {
   }
 }
 
-export default Stat;
+export default connect (
+    state => ({
+      identity: state.blocksReducer.nodes.identity,
+      network: state.blocksReducer.nodes.Network,
+    }),
+    null)(Stat);

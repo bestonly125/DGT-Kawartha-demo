@@ -51,6 +51,10 @@ const initialBlocks = {
   dagNest: {},
   loading: false,
   nodes: {
+    identity: {
+      Cluster: 'Loading...',
+    },
+    Network: 'Loading...',
     data: [],
     filters: {},
     topology: 'static'}

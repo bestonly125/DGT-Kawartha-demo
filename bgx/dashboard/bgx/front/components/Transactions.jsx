@@ -98,7 +98,7 @@ Transactions.defaultProps = {
     accessor: d => {
       if (d.decoded_data == undefined ||
           d.decoded_data.Verb == undefined )
-        return <i>No data</i>
+        return <i></i>
 
       return humanize(d.decoded_data.Verb)
     },
@@ -108,7 +108,7 @@ Transactions.defaultProps = {
     accessor: d => {
       if (d.decoded_data == undefined ||
           d.decoded_data.Name == undefined )
-        return <i>No data</i>
+        return <i></i>
 
       return d.decoded_data.Name
     },
@@ -118,7 +118,7 @@ Transactions.defaultProps = {
     accessor: d => {
       if (d.decoded_data == undefined ||
           d.decoded_data.to_addr == undefined )
-        return <i>No data</i>
+        return <i></i>
 
       return d.decoded_data.to_addr
     },
@@ -128,11 +128,11 @@ Transactions.defaultProps = {
     filterable: false,
     accessor: d => {
       if (d.decoded_data == undefined ||
-          d.decoded_data.num_bgt == undefined ||
-          d.decoded_data.group_id == undefined )
-        return <i>No data</i>
+          d.decoded_data.Value == undefined ||
+          d.decoded_data.Verb == undefined )
+        return <i></i>
 
-      return `${d.decoded_data.num_bgt} ${d.decoded_data.group_id}`
+      return `${d.decoded_data.Value} ${d.decoded_data.Verb}`
     },
   },
 ]
