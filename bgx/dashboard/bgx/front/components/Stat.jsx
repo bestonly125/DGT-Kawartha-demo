@@ -24,7 +24,7 @@ class Stat extends React.Component {
     const data = [
       [
         ['PubKey', identity.PubKey],
-        ['KYCKey', identity.PubKey],
+        ['KYCKey', identity.KYCKey],
         ['IP', identity.IP],
         ['Name', network],
       ],

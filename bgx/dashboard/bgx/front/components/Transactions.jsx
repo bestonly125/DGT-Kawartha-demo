@@ -132,7 +132,7 @@ Transactions.defaultProps = {
           d.decoded_data.Verb == undefined )
         return <i></i>
 
-      return `${d.decoded_data.Value} ${d.decoded_data.Verb}`
+      return `${d.decoded_data.Value}`
     },
   },
 ]
