@@ -17,6 +17,7 @@ import { trimHash } from '../helpers/helper';
 import cloneDeep from 'lodash/cloneDeep';
 
 export function convertPeers(data) {
+  console.log('aaaa',data);
   let r = [];
   convertNode(r, data );
 
@@ -39,6 +40,8 @@ export function convertPeers(data) {
     data: rr,
     filters: convertFilters(groups, rr),
     topology: data.topology,
+    identity: data.Identity,
+    Network: data.Network,
   }
 }
 
@@ -137,17 +140,19 @@ function convertNode(r, node, parent_node = null){
   if (n == '') n = node.name;
 
   let main = {
-    'Date Created': '15.04.2018',
-    'Date Updated': '17.08.2018',
-    'KYCKey': '0ABD7E',
-    'SLA': 'blocked',
-    'Cluster': 'eea98-0ABD7E-ff7ea-0BCDA',
-    'Transactions Count' : 42,
+    'Name': n,
+    // 'Date Created': '15.04.2018',
+    // 'Date Updated': '17.08.2018',
+    // 'KYCKey': '0ABD7E',
+    // 'SLA': 'blocked',
+    // 'Cluster': 'eea98-0ABD7E-ff7ea-0BCDA',
+    // 'Transactions Count' : 42,
   }
   if (typeof node.endpoint !== 'undefined') main.Address = node.endpoint;
-  if (typeof node.node_state !== 'undefined') main.State = node.endpoint;
-  if (typeof node.node_type !== 'undefined') main.Type = node.endpoint;
-  if (typeof node.key !== 'undefined') main.PublicKey = node.key
+  if (typeof node.node_state !== 'undefined') main.State = node.node_state;
+  if (typeof node.type !== 'undefined') main.Type = node.type;
+  if (typeof node.key !== 'undefined') main.PublicKey = node.key;
+  if (typeof node.cluster !== 'undefined') main.Type = 'Cluster';
   // let keys_for_legend = Object.keys(node).filter((k) => {
   // return !['IP', 'name', 'topology', 'port', 'node_type', 'node_type_desc', 'node_state', 'public_key', 'type', 'key', 'delegates', 'endpoint',
   //           'children'].includes(k) })
