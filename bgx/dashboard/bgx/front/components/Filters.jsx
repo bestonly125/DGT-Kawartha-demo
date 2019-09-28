@@ -33,18 +33,18 @@ class Filters extends React.Component {
             <ul className={classNames('list-inline')}>
 
               {filters.map((f) => {
-                      return Object.keys(f.list).map((key) => {
-                        let value = f.list[key]
-                        let selected = {}
-                        selected[f.field] = key
-                        return (<li key={key} className='list-inline-item'
-                                  style={ {backgroundColor: selectedFilters[f.field] !== undefined &&
-                                                            selectedFilters[f.field] === key ? value : false } }>
+                return Object.keys(f.list).map((key) => {
+                  let value = f.list[key]
+                  let selected = {}
+                  selected[f.field] = key
+                  return (<li key={key} className='list-inline-item'
+                            style={ {backgroundColor: selectedFilters[f.field] !== undefined &&
+                                                      selectedFilters[f.field] === key ? value : false } }>
 
-                        <div onClick={() => this.props.onFilter(selected) }>
-                        <span className='marker' style={ {backgroundColor: value} } ></span>{humanize(key)}</div>
-                      </li>)
-                    })
+                      <div onClick={() => this.props.onFilter(selected) }>
+                      <span className='marker' style={ {backgroundColor: value} } ></span>{humanize(key)}</div>
+                    </li>)
+                })
               })}
             </ul>
           </Card>
