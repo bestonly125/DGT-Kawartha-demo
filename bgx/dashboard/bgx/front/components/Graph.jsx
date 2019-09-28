@@ -509,11 +509,12 @@ graph.data = cloneDeep(this.props.data);
 
       extradata.append('circle')
         .attr('class', 'extra-active')
-        .attr('cx', 4)
-        .attr('cy', 4)
-        .attr('r' , 4)
+        .attr('cx', 0)
+        .attr('cy', 12)
+        .attr('r' , 6)
         .attr('fill', '#ffffb3')
         .attr('stroke', '#b3b37d')
+        .attr('stroke-width', 2)
 
       let starter = graph.node.append('g')
         .attr('class', 'starter-data')
