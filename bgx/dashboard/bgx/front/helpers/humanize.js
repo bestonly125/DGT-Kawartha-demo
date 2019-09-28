@@ -20,6 +20,9 @@ const DICT = {
   arbiter: 'Arbiter',
   leader: 'Leader',
   cluster: 'Cluster',
+  child: 'Child',
+  peer: 'Peer',
+  genesis: 'Genesis',
   nosync: 'Nosync',
   //------------------------
   node_type: 'Type',

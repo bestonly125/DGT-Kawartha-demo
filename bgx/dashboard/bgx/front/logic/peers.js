@@ -17,25 +17,22 @@ import { trimHash } from '../helpers/helper';
 import cloneDeep from 'lodash/cloneDeep';
 
 export function convertPeers(data) {
-  console.log('aaaa',data);
   let r = [];
-  convertNode(r, data );
-
-  console.log('rrr',r);
-
-  let groups =[
-      {
-        "field": "node_state",
-        "list": [],
-        "name": "Activity"
-      },
-      {
-        "field": "node_type",
-        "list": [],
-        "name": "Type"
-      }
-    ]
-   let rr = data.topology !== 'static' ?  hideInactive(r) : r;
+  convertNode(r, data);
+  let groups =[{
+    "field": "node_state",
+    "list": [],
+    "name": "Activity"
+  },{
+    "field": "type",
+    "list": [],
+    "name": "Type"
+  },{
+    "field": "role",
+    "list": [],
+    "name": "Role"
+  }];
+  let rr = data.topology !== 'static' ?  hideInactive(r) : r;
   return {
     data: rr,
     filters: convertFilters(groups, rr),
@@ -87,14 +84,13 @@ function convertFilters(filters, d){
     count += f.list.length;
     ff = ff.concat(f.list);
   })
-  let colors = colorbrewer.Set3[count+5];
 
-  colors[1] = '#8dd3c7';
-  colors[0] = '#ffffb3';
+  let colors = colorbrewer.Set3[12];
+
+  // colors[1] = '#8dd3c7';
+  // colors[0] = '#ffffb3';
 
   let r = 0;
-
-  console.log('f',f);
 
   f.forEach((f) => {
     let arr = {};
@@ -152,7 +148,7 @@ function convertNode(r, node, parent_node = null){
   if (typeof node.node_state !== 'undefined') main.State = node.node_state;
   if (typeof node.type !== 'undefined') main.Type = node.type;
   if (typeof node.key !== 'undefined') main.PublicKey = node.key;
-  if (typeof node.cluster !== 'undefined') main.Type = 'Cluster';
+  if (typeof node.role !== 'undefined') main.Role = node.role;
   // let keys_for_legend = Object.keys(node).filter((k) => {
   // return !['IP', 'name', 'topology', 'port', 'node_type', 'node_type_desc', 'node_state', 'public_key', 'type', 'key', 'delegates', 'endpoint',
   //           'children'].includes(k) })
@@ -174,6 +170,8 @@ function convertNode(r, node, parent_node = null){
       port: node.port,
       node_state: typeof node.node_state !== 'undefined' ? (node.node_state !== 'nosync' ? 'active' : 'nosync') : 'inactive',
       node_type: typeof node.type !== 'undefined' ? node.type : 'cluster',
+      type: node.type,
+      role: typeof node.role !== 'undefined' ? node.role : 'child',
       public_key:  node.public_key,
       dependedOnBy:  ch.map(j => j.IP),
       depends: parent_node != null ? [parent_node.IP] : [],

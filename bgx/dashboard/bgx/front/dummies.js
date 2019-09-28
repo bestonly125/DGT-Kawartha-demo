@@ -3596,17 +3596,18 @@ export const state = {
   "link": "http://18.222.233.160:8003/state/e6717403fe89bbc3dacab69f21bbf2d546e9e4c71197cb4818640df60ed6e610db398f?head=83c332c98aa1f86bc63c24900a086660480e05e14d8cbbd2e2a727edf6e8a1b24dc441b4064e159ef51c29868ea5e501cd476f15a78a34dbdf42668d7707b81d"
 }
 
-export const topology = {
+export const topology ={
   "data": {
     "Identity": {
-      "Cluster": "Genesis",
+      "Cluster": "bgx1",
       "Genesis": "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0",
-      "IP": "tcp://validator-bgx-1:8800",
+      "IP": "tcp://validator-bgx-2:8801",
       "KYCKey": "0ABD7E",
       "Leader": "UNDEF",
-      "Parent": "UNDEF",
-      "PubKey": "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0"
+      "Parent": "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0",
+      "PubKey": "034ce6e94b86f58ffac9ee4371c8608b20beecf9c8503b56fa1e2c13447870fc5a"
     },
+    "Network": "BGX TEST network",
     "children": {
       "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0": {
         "cluster": {
@@ -3615,43 +3616,41 @@ export const topology = {
               "delegate": true,
               "endpoint": "tcp://validator-bgx-2:8801",
               "node_state": "active",
-              "type": "leader"
+              "role": "leader",
+              "type": "peer"
             },
             "03a672007f64d01f63f6502d3b0522d29c1bdc27f8dab712947360807771a29e1a": {
-              "type": "plink"
+              "role": "plink",
+              "type": "peer"
             }
           },
-          "name": "bgx1"
+          "name": "bgx1",
+          "type": "cluster"
         },
         "delegate": true,
+        "endpoint": "tcp://validator-bgx-1:8800",
         "genesis": true,
-        "type": "leader"
+        "node_state": "active",
+        "role": "leader",
+        "type": "peer"
       },
       "035ce6e94b86f58ffac9ee4371c8608b20beecf9c8503b56fa1e2c13447870fc5a": {
-        "type": "plink"
+        "role": "plink",
+        "type": "peer"
       },
       "037fc5bd5d094e5efd7b416228711d42b74893ef921ea836531122eb7dc00291a9": {
-        "type": "plink"
+        "peer": "plink",
+        "type": "peer"
       }
     },
     "name": "Genesis",
+    "role": "genesis",
     "sync": false,
-    "topology": "static"
+    "topology": "static",
+    "type": "cluster"
   },
-  "link": "http://18.222.233.160:8008/topology"
+  "link": "http://18.222.233.160:8004/topology"
 }
-
-export const dagNest = {
-  "data": [
-    "bgx1:6:a3d163891258e31d19ac59b36249c7866c877f601e8f6e46518e756497ee055e3977a89c514ada04990d3e9a7731bc663b856a7aaf03de171fd86ba765f3fe05",
-    "bgx1:22:c96391653ef029256f0f7100b8998094d39681f061440cf87ded653713a984d869a8a8fb1cb72a923509f0f33e40c4d097aff8cadeb9fc15f14c6eadef5ee596",
-    "Genesis:110:c444a7595d5d00b644e4d880dc3a618a74c2bdf0b247a9d7adbd7fe55a0fdc703379485aa9bbe6031bb33ffb0874468cf3e51e6f1285c9f8ccfedddfe5dd5561",
-    "Genesis:111:fdfc95a18a01f0dc122af0a719813f819ae03c1be22e9ba3362f666d62b56cc414674a597e86acec94bd9e1863fc049443fc1b0d7f36ff0742de52dc094425e6",
-    "Genesis:112:bc50bd7a7515d40247ac775ff7f33718ccd14353d78a12cdc5e079ed58d157ff34541bda7240ee27f16e51273c67d28ee61abd57a421a3fc6ae2501692edf4de"
-  ],
-  "link": "http://18.222.233.160:8008/dag/nest"
-}
-
 
 // export const state = {
 //   "data": 10,
