@@ -47,7 +47,7 @@ function hideInactive(data){
 
 
   dd = dd.map(d => {
-    if (d.node_state == 'inactive') {
+    if (d.node_state == 'inactive' && d.type != 'cluster') {
       d.dependedOnBy.map(ip => {
         let parent = dd.find(d=> d.IP == ip);
         let parentIndex= parent.depends.indexOf(ip);
