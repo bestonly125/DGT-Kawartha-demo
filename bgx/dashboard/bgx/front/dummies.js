@@ -3603,9 +3603,9 @@ export const topology ={
       "Genesis": "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0",
       "IP": "tcp://validator-bgx-2:8801",
       "KYCKey": "0ABD7E",
-      "Leader": "UNDEF",
-      "Parent": "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0",
-      "PubKey": "034ce6e94b86f58ffac9ee4371c8608b20beecf9c8503b56fa1e2c13447870fc5a"
+      "Leader": "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0",
+      "Parent": "UNDEF",
+      "PubKey": "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0"
     },
     "Network": "BGX TEST network",
     "children": {
