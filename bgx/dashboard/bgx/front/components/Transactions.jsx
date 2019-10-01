@@ -106,21 +106,21 @@ Transactions.defaultProps = {
   { id: 'from',
     Header: 'From',
     accessor: d => {
-      if (d.decoded_data == undefined ||
-          d.decoded_data.Name == undefined )
+      if (d.header == undefined ||
+          d.header.inputs == undefined )
         return <i></i>
 
-      return d.decoded_data.Name
+      return d.header.inputs.map(i => {return <Hash hash={i}/>})
     },
   },
   { id: 'to',
     Header: 'To',
     accessor: d => {
-      if (d.decoded_data == undefined ||
-          d.decoded_data.to_addr == undefined )
+      if (d.header == undefined ||
+          d.header.outputs == undefined )
         return <i></i>
 
-      return d.decoded_data.to_addr
+      return d.header.outputs.map(i => {return <Hash hash={i}/>})
     },
   },
   { id: 'amount',
