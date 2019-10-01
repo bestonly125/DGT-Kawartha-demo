@@ -222,7 +222,7 @@ Network.defaultProps = {
 function mapStateToProps(store) {
   return {
     cluster: store.blocksReducer.nodes.identity.Cluster,
-    nodes_count: store.blocksReducer.nodes.data.length,
+    nodes_count: store.blocksReducer.nodes.data.filter(n => n.type == 'peer').length,
     transactions_count: store.transactionReducer.data == undefined ?
                   0 : store.transactionReducer.data.length,
     transactions: store.transactionReducer.data,

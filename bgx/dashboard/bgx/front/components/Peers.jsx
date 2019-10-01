@@ -110,7 +110,7 @@ class Peers extends React.Component {
                   return {
                     onClick: () => {
                       this.selectPeer(rowInfo.original.IP)
-
+                      delete rowInfo.original.raw_data.IP;
                       store.dispatch(showModal({title: 'Node raw data',
                         json: rowInfo.original.raw_data
                       }))
