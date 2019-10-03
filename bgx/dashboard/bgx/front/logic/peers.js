@@ -180,6 +180,7 @@ function convertNode(r, node, parent_node = null){
       tooltip: tooltip,
       filtered: false,
       raw_data: node,
+      component: node.component,
     });
   return r;
 }

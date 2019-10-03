@@ -15,7 +15,7 @@
 const DICT = {
   inactive: 'Inactive',
   active: 'Active',
-  plink: 'Permalink',
+  plink: 'Voter',
   aux: 'Secondary',
   arbiter: 'Arbiter',
   leader: 'Leader',

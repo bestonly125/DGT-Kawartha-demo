@@ -86,7 +86,8 @@ class Legend extends React.Component {
                     Object.keys(i[key]).sort().map((j) => {
                       if (j == 'zzz')
                         return (<div>
-                          <a className='btn btn-info btn-sm' onClick={() => this.props.onChangeDashboard(i[key][j])}>Go to that node</a>
+                          <a className={`btn btn-info btn-sm ${i[key].State != 'active'? 'disabled' : ''}`}
+                            onClick={() => this.props.onChangeDashboard(i[key][j])}>Go to that node {i[key].node_state}</a>
                           </div>)
                       else
                         return (<div>
