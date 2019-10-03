@@ -92,7 +92,7 @@ Transactions.defaultProps = {
     accessor: t => `${t.header.family_name} ${t.header.family_version}`,
   },
   { id: 'header_signature',
-    Header: 'Hash PX',
+    Header: 'Hash TX',
     filterable: false,
     accessor: d => {
 
