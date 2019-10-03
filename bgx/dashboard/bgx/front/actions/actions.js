@@ -196,7 +196,7 @@ export function getDagNest() {
 }
 
 export function changeDashboard(dispatch, code) {
-  return axios.get(`${apiUrl}/validator/?endpoint=${encodeURI(code)}`).then( response => {
+  return axios.get(`${apiUrl}/validator?endpoint=${encodeURI(code)}`).then( response => {
     dispatch(getBlocksAndTopologyAndDagNest());
 
     dispatch(getTransactions());
