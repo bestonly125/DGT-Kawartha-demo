@@ -186,29 +186,6 @@ class Network extends React.Component {
           />
         </Card>
       </div>
-
-       <div className="tab-offset">
-        <Card id="transaction_count" title='Transaction Amount'>
-          <Bar data={data2}
-            options={{
-              scales: {
-                yAxes: [{
-                  scaleLabel: {
-                    display: true,
-                    labelString: "BGT value"
-                  }
-                }],
-                xAxes: [{
-                  scaleLabel: {
-                    display: true,
-                    labelString: "Transaction"
-                  }
-                }]
-              }
-            }}
-          />
-        </Card>
-      </div>
     </div>);
   }
 }

@@ -118,8 +118,8 @@ Blocks.defaultProps = {
   loading: false,
   columns: [
   {
-    id: 'blockNum',
-    Header: 'Block Num',
+    id: 'pack_num',
+    Header: 'Pack Num',
     accessor: d => parseInt(d.header.block_num),
     width: 100,
   },
@@ -130,7 +130,7 @@ Blocks.defaultProps = {
         })
   },
   { id: 'headerSignature',
-    Header: 'Header Signature',
+    Header: 'Hash PX',
     accessor: d => <Hash hash={d.header_signature}/>,
   },
   {
@@ -139,15 +139,15 @@ Blocks.defaultProps = {
     accessor: d => d.header.consensus,
   },
     { id: 'prevBlockId',
-    Header: 'Previous Block ID',
+    Header: 'Previous ID',
     accessor: d => <Hash hash={d.header.previous_block_id}/>,
   },
     { id: 'signerPublicKey',
     Header: 'Signer Public Key',
     accessor: d => <Hash hash={d.header.signer_public_key}/>,
   },
-    { id: 'stateRootHash',
-    Header: 'State Root Hash',
+    { id: 'stateDagHash',
+    Header: 'State DAG Hash',
     accessor: d =><Hash hash={d.header.state_root_hash}/>,
   },]
 };

@@ -3599,9 +3599,9 @@ export const state = {
 export const topology ={
   "data": {
     "Identity": {
-      "Cluster": "bgx1",
+      "Cluster": "Genesis",
       "Genesis": "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0",
-      "IP": "tcp://validator-bgx-2:8801",
+      "IP": "tcp://validator-bgx-1:8800",
       "KYCKey": "0ABD7E",
       "Leader": "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0",
       "Parent": "UNDEF",
@@ -3613,18 +3613,33 @@ export const topology ={
         "cluster": {
           "children": {
             "034ce6e94b86f58ffac9ee4371c8608b20beecf9c8503b56fa1e2c13447870fc5a": {
+              "cluster": {
+                "children": {
+                  "037fc5bd5d094e5efd7b416228711d42b74893ef921ea836531122eb7dc00291a9": {
+                    "component": "tcp://validator-bgx-3:4007",
+                    "delegate": true,
+                    "endpoint": "tcp://validator-bgx-3:8802",
+                    "node_state": "inactive",
+                    "role": "leader",
+                    "type": "peer"
+                  }
+                },
+                "name": "Bgx2",
+                "type": "cluster"
+              },
+              "component": "tcp://validator-bgx-2:4006",
               "delegate": true,
               "endpoint": "tcp://validator-bgx-2:8801",
               "node_state": "active",
               "role": "leader",
               "type": "peer"
             },
-            "03a672007f64d01f63f6502d3b0522d29c1bdc27f8dab712947360807771a29e1a": {
+            "037fc5bd5d094e5efd7b416228711d42b74893ef921ea836531122eb7dc00291a9_": {
               "role": "plink",
               "type": "peer"
             }
           },
-          "name": "bgx1",
+          "name": "Bgx1",
           "type": "cluster"
         },
         "delegate": true,
@@ -3634,12 +3649,49 @@ export const topology ={
         "role": "leader",
         "type": "peer"
       },
-      "035ce6e94b86f58ffac9ee4371c8608b20beecf9c8503b56fa1e2c13447870fc5a": {
+      "02faee0c0cd741dab29414fa0d057c20240a492413bb25d2e13b74692961b2ba7b": {
+        "cluster": {
+          "children": {
+            "037fc4bd5d094e5efd7b416228711d42b74893ef921ea836531122eb7dc00291a9_": {
+              "delegate": true,
+              "role": "leader",
+              "type": "peer"
+            }
+          },
+          "name": "Bgx3",
+          "type": "cluster"
+        },
         "role": "plink",
         "type": "peer"
       },
-      "037fc5bd5d094e5efd7b416228711d42b74893ef921ea836531122eb7dc00291a9": {
-        "peer": "plink",
+      "036f244352bf2cc6cc76bdf6572b8679971d3a02d80a5d7b8463a40dd492f79b35_": {
+        "cluster": {
+          "children": {
+            "0371e6681222d16fd3e6ddc872ecf3cdffa9d4d351b64703febebaae3a62e755f0": {
+              "delegate": true,
+              "role": "leader",
+              "type": "peer"
+            }
+          },
+          "name": "Bgx5",
+          "type": "cluster"
+        },
+        "role": "plink",
+        "type": "peer"
+      },
+      "037fc7bd5d094e5efd7b416228711d42b74893ef921ea836531122eb7dc00291a9_": {
+        "cluster": {
+          "children": {
+            "02cf0f7fa1cd96986a872df4a52496fffc2837a4b92a6b93554dc631ef90ca4d64": {
+              "delegate": true,
+              "role": "leader",
+              "type": "peer"
+            }
+          },
+          "name": "Bgx4",
+          "type": "cluster"
+        },
+        "role": "plink",
         "type": "peer"
       }
     },
@@ -3649,7 +3701,7 @@ export const topology ={
     "topology": "static",
     "type": "cluster"
   },
-  "link": "http://18.222.233.160:8004/topology"
+  "link": "http://127.0.0.1:8003/topology"
 }
 
 // export const state = {

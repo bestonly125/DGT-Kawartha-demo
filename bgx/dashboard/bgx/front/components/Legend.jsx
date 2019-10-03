@@ -16,7 +16,8 @@ import React from 'react';
 import classNames from 'classnames/bind';
 import {trimSpaces} from '../helpers/helper';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import { connect } from 'react-redux';
+import { changeDashboard } from '../actions/actions';
 import humanize from '../helpers/humanize';
 
 import Hash from './Hash';
@@ -25,6 +26,11 @@ class Legend extends React.Component {
   constructor(props){
     super(props);
     this.state = {collapsed: false};
+  }
+
+
+  changeDashboard(e) {
+    this.props.onChangeDashboard(e);
   }
 
   render() {
@@ -78,10 +84,15 @@ class Legend extends React.Component {
                 <div key={`hg-${key}`} className={classNames("tab-pane", "fade",  tt == 0 ? 'show active' : '' )} id={trimSpaces(key)} role="tabpanel">
                   {
                     Object.keys(i[key]).sort().map((j) => {
-                      return (<div>
-                        <strong>{`${j}: `}</strong>
-                        <span>{humanize(i[key][j])}</span>
-                        </div>)
+                      if (j == 'zzz')
+                        return (<div>
+                          <a className='btn btn-info btn-sm' onClick={() => this.props.onChangeDashboard(i[key][j])}>Go to that node</a>
+                          </div>)
+                      else
+                        return (<div>
+                          <strong>{`${j}: `}</strong>
+                          <span>{humanize(i[key][j])}</span>
+                          </div>)
                     })
                   }
                 </div>)
@@ -99,4 +110,12 @@ Legend.defaultProps = {
   legend: [],
 }
 
-export default Legend;
+export default connect (
+    state => ({
+      dagNest: state.blocksReducer.dagNest,
+      blockColors: state.blocksReducer.topology,
+    }),
+    dispatch => ({
+        onChangeDashboard: code => changeDashboard(dispatch, code),
+    })
+    )(Legend);
