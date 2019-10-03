@@ -195,6 +195,22 @@ export function getDagNest() {
   };
 }
 
+export function changeDashboard(dispatch, code) {
+  return axios.get(`${apiUrl}/validator/?endpoint=${encodeURI(code)}`).then( response => {
+    dispatch(getBlocksAndTopologyAndDagNest());
+
+    dispatch(getTransactions());
+    dispatch(getStates());
+  })
+  .catch(error => {
+        alert(error);
+    throw(error);
+
+    // dispatch(getPeersSuccess(convertPeers(nodes)))
+  })
+}
+
+
 export function changeCollapseBlocks(block) {
   return {
     type: block.name == '+' ? HIDE_BLOCKS : SHOW_BLOCKS,

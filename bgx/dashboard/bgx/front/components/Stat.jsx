@@ -30,7 +30,7 @@ class Stat extends React.Component {
       ],
       [
         ['Cluster Name', identity.Cluster],
-        ['Parent Node',  identity.Parent],
+        ['Predecessor Node',  identity.Parent],
         ['Leader', identity.Leader],
         ['Genesis', identity.Genesis]
       ],

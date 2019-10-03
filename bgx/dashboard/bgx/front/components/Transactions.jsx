@@ -91,16 +91,12 @@ Transactions.defaultProps = {
     Header: 'Family name (version)',
     accessor: t => `${t.header.family_name} ${t.header.family_version}`,
   },
-  {
-    id: 'type',
-    Header: 'Type',
+  { id: 'header_signature',
+    Header: 'Hash PX',
     filterable: false,
     accessor: d => {
-      if (d.decoded_data == undefined ||
-          d.decoded_data.Verb == undefined )
-        return <i></i>
 
-      return humanize(d.decoded_data.Verb)
+      return <Hash hash={d.header_signature}/>
     },
   },
   { id: 'from',
@@ -123,16 +119,12 @@ Transactions.defaultProps = {
       return d.header.outputs.map(i => {return <Hash hash={i}/>})
     },
   },
-  { id: 'amount',
-    Header: 'Amount',
+  {
+    id: 'signer_public_key',
+    Header: 'Transaction',
     filterable: false,
     accessor: d => {
-      if (d.decoded_data == undefined ||
-          d.decoded_data.Value == undefined ||
-          d.decoded_data.Verb == undefined )
-        return <i></i>
-
-      return `${d.decoded_data.Value}`
+      return <Hash hash={d.header.signer_public_key}/>
     },
   },
 ]

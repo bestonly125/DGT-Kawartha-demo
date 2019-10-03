@@ -149,6 +149,7 @@ function convertNode(r, node, parent_node = null){
   if (typeof node.type !== 'undefined') main.Type = node.type;
   if (typeof node.key !== 'undefined') main.PublicKey = node.key;
   if (typeof node.role !== 'undefined') main.Role = node.role;
+  if (typeof node.component !== 'undefined') main['zzz'] = node.component;
   // let keys_for_legend = Object.keys(node).filter((k) => {
   // return !['IP', 'name', 'topology', 'port', 'node_type', 'node_type_desc', 'node_state', 'public_key', 'type', 'key', 'delegates', 'endpoint',
   //           'children'].includes(k) })
@@ -168,7 +169,7 @@ function convertNode(r, node, parent_node = null){
       name: n,
       IP: node.IP,
       port: node.port,
-      node_state: typeof node.node_state !== 'undefined' ? (node.node_state !== 'nosync' ? 'active' : 'nosync') : 'inactive',
+      node_state: typeof node.node_state !== 'undefined' ? node.node_state : 'inactive',
       node_type: typeof node.type !== 'undefined' ? node.type : 'cluster',
       type: node.type,
       role: typeof node.role !== 'undefined' ? node.role : 'child',

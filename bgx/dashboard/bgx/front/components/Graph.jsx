@@ -1149,7 +1149,7 @@ starterColor(ip) {
 Graph.defaultProps = {
   size: {
     width: 780,
-    height: 350,
+    height: 600,
   },
   selectedFilters: null,
   filters: [],
