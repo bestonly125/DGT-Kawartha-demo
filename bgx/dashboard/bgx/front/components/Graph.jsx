@@ -443,11 +443,12 @@ graph.data = cloneDeep(this.props.data);
 
         //add line to graph object
 
-      graph.nodeRect = graph.node.append('rect')
+      graph.nodeRect = graph.node.append('polygon')
         .attr('rx', 5)
         .attr('ry', 5)
         .attr('width' , 2)
-        .attr('height', 2);
+        .attr('height', 2)
+        .attr('points', '0,0 0,10 10,10 10,0')
 
 
       let collapse = graph.node.append('g')
@@ -588,7 +589,7 @@ graph.data = cloneDeep(this.props.data);
 
     graph.node.each(function(d) {
       var node   = d3.select(this),
-      rect  = node.select('rect'),
+      rect  = node.select('polygon'),
       text   = node.selectAll('text'),
       collapseChildren = node.selectAll('.collapse-children'),
       collapseParents = node.selectAll('.collapse-parents'),
@@ -711,7 +712,20 @@ graph.data = cloneDeep(this.props.data);
         })
         .attr('height', function(d) {
           return bounds.y2 - bounds.y1 //that.checkNodeFiltered(d) ? 20 : 26
-        });
+        })
+        .attr('points', function(d) {
+            if (d['IP'] == that.props.pubKey)
+                return `${bounds.x1},${bounds.y1} ${-1*bounds.x1 +20},${bounds.y1} ${-1*bounds.x1},${-1* bounds.y1} ${bounds.x1-20},${-1* bounds.y1}`;
+
+            else
+                return `${bounds.x1},${bounds.y1} ${bounds.x1+2.5},${bounds.y1+2.5} ${bounds.x1-2.5},${bounds.y1-2.5}
+                        ${-1*bounds.x1+2.5},${bounds.y1-2.5} ${-1*bounds.x1+5},${bounds.y1+2.5}
+                        ${-1*bounds.x1+5},${-1* bounds.y1-2.5} ${-1*bounds.x1+2.5},${-1*bounds.y1+2.5}
+                        ${bounds.x1+2.5},${-1* bounds.y1+2.5} ${bounds.x1},${-1* bounds.y1}`
+
+
+                return `${bounds.x1},${bounds.y1} ${-1*bounds.x1},${bounds.y1} ${-1*bounds.x1},${-1* bounds.y1} ${bounds.x1},${-1* bounds.y1}`;
+        })
 
       collapseChildren
         .attr('transform',`translate(${bounds.x2-10}, ${bounds.y2+6})`)
@@ -1163,5 +1177,6 @@ export default connect (
     state => ({
       dagNest: state.blocksReducer.dagNest,
       blockColors: state.blocksReducer.topology,
+      pubKey: state.blocksReducer.nodes.identity.PubKey,
     }),
     null)(Graph);
