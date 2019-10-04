@@ -20,7 +20,7 @@ import Hash from './Hash'
 
 import humanize from '../helpers/humanize';
 
-import { showModal, getTransactions } from '../actions/actions';
+import { showModal2, getReceipt, getTransactions } from '../actions/actions';
 
 
 import ReactTable from 'react-table'
@@ -33,19 +33,12 @@ class Transactions extends React.Component {
     this.state = {selectedTr: {a: 'a'}}
   }
 
-  showDetails(info) {
-    store.dispatch(showModal({
-      title: 'Transaction raw details',
-      json: info.original
-    }))
-  }
-
   update(){
     store.dispatch(getTransactions());
   }
 
   render() {
-    const {transactions, columns, loading} = this.props
+    const {transactions, columns, loading, onShowModal, onGetReceipt} = this.props
     return (
       <Card id='transactions_card' title='Transactions'
         btns={[{name: 'Update', handler: this.update}]}
@@ -62,7 +55,14 @@ class Transactions extends React.Component {
           getTdProps={(state, rowInfo, column, instance) => {
             return {
               onClick: (e, handleOriginal) => {
-                this.showDetails(rowInfo)
+                if (column.id == 'header_signature') {
+                  onGetReceipt(rowInfo.original.header_signature)
+                }
+                else
+                  onShowModal({
+                    title: 'Transaction raw details',
+                    json: rowInfo.original
+                  });
 
                 // IMPORTANT! React-Table uses onClick internally to trigger
                 // events like expanding SubComponents and pivots.
@@ -130,11 +130,13 @@ Transactions.defaultProps = {
 ]
 };
 
-function mapStateToProps(store) {
-  return {
-    transactions: store.transactionReducer.data,
-    loading: store.transactionReducer.loading,
-  };
-}
-
-export default connect (mapStateToProps, null)(Transactions);
+export default connect (
+  state => ({
+    transactions: state.transactionReducer.data,
+    loading: state.transactionReducer.loading,
+  }),
+  dispatch => ({
+    onShowModal: json => showModal2(dispatch, json),
+    onGetReceipt: id => getReceipt(dispatch, id),
+  })
+  )(Transactions);

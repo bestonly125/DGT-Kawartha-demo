@@ -29,6 +29,7 @@ import Wallet from './Wallet';
 import Feedback from './Feedback';
 import LogoSvg from '../assets/logo.svg';
 import Modal from './Modal';
+import Batches from './Batches';
 
 import { getTransactions, getPeers, getStates, getBlocks } from '../actions/actions';
 
@@ -72,7 +73,7 @@ class Main extends React.Component {
                 </a>
               </li>
               <li className="nav-item">
-                <a className={classNames('nav-link')}
+                <a className='nav-link'
                    id="peers-tab"
                    data-toggle="tab"
                    href="#peers"
@@ -81,7 +82,7 @@ class Main extends React.Component {
                 </a>
               </li>
               <li className="nav-item">
-                <a className={classNames('nav-link')}
+                <a className='nav-link'
                    id="transactions-tab"
                    data-toggle="tab"
                    href="#transactions"
@@ -90,12 +91,21 @@ class Main extends React.Component {
                 </a>
               </li>
               <li className="nav-item">
-                <a className={classNames('nav-link')}
+                <a className='nav-link'
                    id="blocks-tab"
                    data-toggle="tab"
                    href="#blocks"
                    role="tab">
                   Ledger
+                </a>
+              </li>
+              <li className="nav-item">
+                <a className='nav-link'
+                   id="batches-tab"
+                   data-toggle="tab"
+                   href="#batches"
+                   role="tab">
+                  Batches
                 </a>
               </li>
 
@@ -143,6 +153,9 @@ class Main extends React.Component {
           </div>
           <div className={classNames("tab-pane", "fade")} id="blocks" role="tabpanel">
             <Blocks/>
+          </div>
+          <div className={classNames("tab-pane", "fade")} id="batches" role="tabpanel">
+            <Batches/>
           </div>
           <div className={classNames("tab-pane", "fade")} id="state" role="tabpanel">
             <State/>

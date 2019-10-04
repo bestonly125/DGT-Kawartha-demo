@@ -713,19 +713,7 @@ graph.data = cloneDeep(this.props.data);
         .attr('height', function(d) {
           return bounds.y2 - bounds.y1 //that.checkNodeFiltered(d) ? 20 : 26
         })
-        .attr('points', function(d) {
-            if (d['IP'] == that.props.pubKey)
-                return `${bounds.x1},${bounds.y1} ${-1*bounds.x1 +20},${bounds.y1} ${-1*bounds.x1},${-1* bounds.y1} ${bounds.x1-20},${-1* bounds.y1}`;
-
-            else
-                return `${bounds.x1},${bounds.y1} ${bounds.x1+2.5},${bounds.y1+2.5} ${bounds.x1-2.5},${bounds.y1-2.5}
-                        ${-1*bounds.x1+2.5},${bounds.y1-2.5} ${-1*bounds.x1+5},${bounds.y1+2.5}
-                        ${-1*bounds.x1+5},${-1* bounds.y1-2.5} ${-1*bounds.x1+2.5},${-1*bounds.y1+2.5}
-                        ${bounds.x1+2.5},${-1* bounds.y1+2.5} ${bounds.x1},${-1* bounds.y1}`
-
-
-                return `${bounds.x1},${bounds.y1} ${-1*bounds.x1},${bounds.y1} ${-1*bounds.x1},${-1* bounds.y1} ${bounds.x1},${-1* bounds.y1}`;
-        })
+        .attr('points', that.drawPolygon(d,bounds))
 
       collapseChildren
         .attr('transform',`translate(${bounds.x2-10}, ${bounds.y2+6})`)
@@ -785,6 +773,22 @@ graph.data = cloneDeep(this.props.data);
         graph.force.tick();
     }
   }
+
+  drawPolygon(d, b) {
+    if (d['IP'] == this.props.pubKey)
+        return `${b.x1},${b.y1} ${b.x2+10},${b.y1} ${b.x2},${b.y2} ${b.x1-10},${b.y2}`;
+
+    else if (d['role'] == 'genesis')
+        return `${b.x1-10},${b.y1}
+                ${b.x2+10},${b.y1} ${b.x2},${(b.y2 + b.y1)/2}  ${b.x2+10},${b.y2}
+                ${b.x1-10},${b.y2} ${b.x1},${(b.y1 + b.y2)/2}`;
+
+    else
+        return `${b.x1},${b.y1+6} ${b.x1+2},${b.y1+2} ${b.x1+6},${b.y1}
+                ${b.x2-6},${b.y1} ${b.x2-2},${b.y1+2} ${b.x2},${b.y1+6}
+                ${b.x2},${b.y2-6} ${b.x2-2},${b.y2-2} ${b.x2-5},${b.y2}
+                ${b.x1+6},${b.y2} ${b.x1+2},${b.y2-2} ${b.x1},${b.y2-6}`;
+}
 
   checkNodeSelected(p){
     return p.IP == this.props.selectedPeerIP || p.selected;
