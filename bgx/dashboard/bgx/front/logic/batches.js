@@ -12,17 +12,11 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
-import React from 'react';
-import { trimHash } from '../helpers/helper';
+import { decode } from '../helpers/helper';
 
-class Hash extends React.Component {
-  render() {
-    const { hash, length} = this.props
-    return (
-      <span data-toggle="tooltip" data-placement="top" title={hash} style={{padding: '3px'}}>
-        {trimHash(hash, length)}
-      </span>);
-  }
+export function convertBatches(data) {
+  return data;
 }
-
-export default Hash;
+export function convertBatch(data) {
+  return data;
+}

@@ -13,19 +13,22 @@
 // -----------------------------------------------------------------------------
 
 import axios from 'axios';
-import { nodes, transactions, states, state, blocks, topology, dagNest } from '../dummies'
+import { nodes, transactions, states, state, blocks, topology, dagNest, batches, reciept } from '../dummies'
 
 import { convertPeers } from '../logic/peers'
 import { convertTransactions } from '../logic/transactions'
 import { convertStates, convertState } from '../logic/state'
 import { convertTopology } from '../logic/topology'
 import { convertDagNest } from '../logic/dagNest'
+import { convertBatches, convertBatch } from '../logic/batches'
 
 export const apiUrl = location.origin;
 //const apiUrl = 'http://18.217.2.175:8003';
 //const apiUrl = 'http://18.222.233.160:8003';
 
 export const GET_TRANSACTIONS = 'GET_TRANSACTIONS';
+export const GET_BATCHES = 'GET_BATCHES';
+export const GET_BATCH = 'GET_BATCH';
 export const GET_STATES = 'GET_STATES';
 export const GET_STATE = 'GET_STATE';
 export const GET_BLOCKS = 'GET_BLOCKS';
@@ -36,6 +39,8 @@ export const GET_TOPOLOGY = 'GET_TOPOLOGY';
 export const GET_DAG_NEST = 'GET_DAG_NEST';
 
 export const TRANSACTIONS_LOADING = 'TRANSACTIONS_LOADING';
+export const BATCHES_LOADING = 'BATCHES_LOADING';
+export const BATCH_LOADING = 'BATCH_LOADING';
 export const STATES_LOADING = 'STATES_LOADING';
 export const BLOCKS_LOADING = 'BLOCKS_LOADING';
 export const PEERS_LOADING = 'PEERS_LOADING';
@@ -44,6 +49,8 @@ export const DAG_NEST_LOADING = 'DAG_NEST_LOADING';
 
 
 export const SHOW_MODAL = 'SHOW_MODAL';
+
+const local = false;
 
 
 function nextPage(url, data, resolve, reject){
@@ -68,6 +75,14 @@ function nextPage(url, data, resolve, reject){
 export function getTransactions() {
   return function(dispatch) {
     dispatch(transactionsLoading());
+
+    if (local) {
+       // dispatch(convertTransactions(transactions.data));
+      return new Promise(resolve => {
+        resolve( dispatch(getTransactionsSuccess(convertTransactions(transactions.data))));
+      });
+    }
+
     new Promise((resolve, reject) => {
       nextPage(`${apiUrl}/transactions`,[],resolve, reject)
     }).then( data => {
@@ -79,6 +94,50 @@ export function getTransactions() {
         throw(error);
       })
   };
+}
+
+export function getBatches() {
+  return function(dispatch) {
+    dispatch(batchesLoading());
+
+    if (local) {
+       // dispatch(convertTransactions(transactions.data));
+      return new Promise(resolve => {
+        resolve( dispatch(getBatchesSuccess(convertBatches(batches.data))));
+      });
+    }
+
+    new Promise((resolve, reject) => {
+      nextPage(`${apiUrl}/batches`,[],resolve, reject)
+    }).then( data => {
+        dispatch(getBatchesSuccess(convertBatches(data)));
+      })
+      .catch(error => {
+        console.log(error)
+        // dispatch(getTransactionsSuccess(convertTransactions(transactions)));
+        throw(error);
+      })
+  };
+}
+
+export function getBatchDetails(dispatch, id) {
+    dispatch(batchLoading());
+
+    if (local) {
+       // dispatch(convertTransactions(transactions.data));
+      dispatch(getBatchSuccess(convertBatch(reciept.data)));
+      return;
+    }
+
+  return axios.get(`${apiUrl}/batch_statuses?id=${id}`).then( response => {
+    dispatch(getBatchSuccess(convertBatch(response.data)));
+  })
+  .catch(error => {
+        alert(error);
+    throw(error);
+
+    // dispatch(getPeersSuccess(convertPeers(nodes)))
+  })
 }
 
 export function getStates() {
@@ -113,9 +172,10 @@ export function getBlocks() {
   return dispatch => {
     dispatch(blocksLoading());
 
-    // return new Promise(resolve => {
-    //   resolve( dispatch(getBlocksSuccess(blocks.data)) );
-    // });
+    if (local)
+      return new Promise(resolve => {
+        resolve( dispatch(getBlocksSuccess(blocks.data)) );
+      });
 
     return new Promise((resolve, reject) => {
       nextPage(`${apiUrl}/blocks`,[],resolve, reject)
@@ -143,9 +203,10 @@ export function getTopology() {
   return function(dispatch) {
     dispatch(topologyLoading());
 
-    // return new Promise(resolve => {
-    //   resolve( dispatch(getTopologySuccess(topology.data)));
-    // });
+    if (local)
+      return new Promise(resolve => {
+        resolve( dispatch(getTopologySuccess(topology.data)));
+      });
 
     return axios.get(`${apiUrl}/topology`)
       .then( response => {
@@ -180,9 +241,10 @@ export function getDagNest() {
   return function(dispatch) {
     dispatch(dagNestLoading());
 
-    // return new Promise(resolve => {
-    //   resolve( dispatch(getDagNestSuccess(convertDagNest(dagNest.data)) ));
-    // });
+    if (local)
+      return new Promise(resolve => {
+        resolve( dispatch(getDagNestSuccess(convertDagNest(dagNest.data)) ));
+      });
 
     return axios.get(`${apiUrl}/dag/nest`)
       .then( response => {
@@ -208,6 +270,26 @@ export function changeDashboard(dispatch, code) {
 
     // dispatch(getPeersSuccess(convertPeers(nodes)))
   })
+}
+
+export function getReceipt(dispatch, id) {
+  return axios.get(`${apiUrl}/receipts?id=${id}`).then( response => {
+    dispatch(showModal({title: 'Raw Receipt',
+                        json: response.data}
+                        ))
+  })
+  .catch(error => {
+        alert(error);
+    throw(error);
+
+    // dispatch(getPeersSuccess(convertPeers(nodes)))
+  })
+}
+
+export function showModal2(dispatch, json) {
+  return new Promise(resolve => {
+    resolve( dispatch(showModal(json)));
+  });
 }
 
 
@@ -281,6 +363,22 @@ function getTransactionsSuccess(data) {
     };
 }
 
+function getBatchesSuccess(data) {
+  return {
+    type: GET_BATCHES,
+    loading: false,
+    data,
+    };
+}
+
+function getBatchSuccess(data) {
+  return {
+    type: GET_BATCH,
+    loading: false,
+    data,
+    };
+}
+
 function blocksLoading() {
   return {
     type: BLOCKS_LOADING,
@@ -302,6 +400,19 @@ function transactionsLoading() {
     };
 }
 
+function batchesLoading() {
+  return {
+    type: BATCHES_LOADING,
+    loading: true,
+    };
+}
+
+function batchLoading() {
+  return {
+    type: BATCH_LOADING,
+    loading: true,
+    };
+}
 function peersLoading() {
   return {
     type: PEERS_LOADING,

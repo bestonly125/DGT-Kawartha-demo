@@ -31,7 +31,12 @@ import {
   TOPOLOGY_LOADING,
   DAG_NEST_LOADING,
   FILTER_PEERS,
-  SHOW_MODAL
+  SHOW_MODAL,
+
+  GET_BATCHES,
+  BATCHES_LOADING,
+  GET_BATCH,
+  BATCH_LOADING,
 } from '../actions/actions'
 import {addState} from '../logic/state'
 import {filterPeers} from '../logic/peers'
@@ -44,6 +49,13 @@ const initialModalState = {
 const initialState = {
   data: [],
   loading: false,
+}
+
+const initialBatches = {
+  data: [],
+  loading: false,
+  batch: [],
+  batchLoading: false,
 }
 
 const initialBlocks = {
@@ -182,6 +194,34 @@ function transactionReducer(state=initialState, action) {
   return state;
 }
 
+function batchesReducer(state=initialState, action) {
+  switch(action.type) {
+    case GET_BATCHES:
+      return Object.assign({}, state, {
+        data: action.data,
+        loading: false,
+      });
+
+    case BATCHES_LOADING:
+      return Object.assign({}, state, {
+        loading: true,
+      });
+    case GET_BATCH:
+      return Object.assign({}, state, {
+        batch: action.data,
+        batchLoading: false,
+      });
+
+    case BATCHES_LOADING:
+      return Object.assign({}, state, {
+        batchLoading: true,
+      });
+      default:
+        return state;
+  }
+  return state;
+}
+
 function peersReducer(state=initialPeersState, action) {
   switch(action.type) {
     case GET_PEERS:
@@ -217,6 +257,7 @@ const BJXReducer = combineReducers({
   peersReducer,
   stateReducer,
   blocksReducer,
+  batchesReducer,
   modalReducer,
 })
 

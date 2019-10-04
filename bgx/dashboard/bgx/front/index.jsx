@@ -35,7 +35,7 @@ import Main from './components/Main';
 
 import BGXReducer from './reducers/BGXReducer';
 
-import { getTransactions, getPeers, getStates, getBlocks, getBlocksAndTopologyAndDagNest, getDagNest } from './actions/actions';
+import { getTransactions, getPeers, getStates, getBlocks, getBlocksAndTopologyAndDagNest, getDagNest, getBatches } from './actions/actions';
 
 library.add(faEnvelope);
 library.add(faChevronUp);
