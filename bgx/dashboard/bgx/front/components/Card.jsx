@@ -35,6 +35,17 @@ class Card extends React.Component {
     callback();
   }
 
+  icon(btn) {
+    switch (btn.name) {
+      case 'Update':
+        return <FontAwesomeIcon icon={"sync"} />
+      case 'Back':
+        return <FontAwesomeIcon icon={"undo"} />
+      default:
+        return btn.name
+    }
+  }
+
 
   render() {
     const {id, title, children, btns, loading} = this.props;
@@ -47,19 +58,15 @@ class Card extends React.Component {
           aria-controls="collapseExample">
           {title}
           <div className='float-right close-icon text-secondary'>
-            { btns.map(b =>
+            { btns.map(btn =>
               (
                 <button type="button"
                   class="btn btn-sm btn-light"
-                  onClick={ (e) => this.handleClick(e, b.handler) }>
-                {
-                  b.name == 'Update' ? (
-                    <FontAwesomeIcon icon={"sync"} />
-                  ) : (
-                    b.name
-                  )
-                }</button>))
-            }
+                  onClick={ (e) => this.handleClick(e, btn.handler) }>
+                  {this.icon(btn)}
+                </button>
+              )
+            )}
             <button type="button"
                   class="btn btn-sm btn-light">
               <FontAwesomeIcon icon={this.state.collapsed ? "chevron-down" : "chevron-up"} />

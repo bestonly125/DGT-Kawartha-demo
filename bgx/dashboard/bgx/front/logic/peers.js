@@ -18,7 +18,8 @@ import cloneDeep from 'lodash/cloneDeep';
 
 export function convertPeers(data) {
   let r = [];
-  convertNode(r, data);
+  let depth = 1;
+  convertNode(r, data, depth);
   let groups =[{
     "field": "node_state",
     "list": [],
@@ -108,7 +109,7 @@ function convertFilters(filters, d){
   return  f;
 }
 
-function convertNode(r, node, parent_node = null){
+function convertNode(r, node, depth, parent_node = null){
   let children = {};
 
   // if (typeof node.cluster !== 'undefined') children = node.cluster.children;
@@ -119,12 +120,12 @@ function convertNode(r, node, parent_node = null){
 
 
   if (typeof node.cluster !== 'undefined')
-    convertNode(r, node.cluster, node);
+    convertNode(r, node.cluster, depth+1, node);
 
 
   let ch = Object.keys(children).map(key => {return {...children[key], key:key };});
 
-  ch.forEach(child => convertNode(r, child, node) );
+  ch.forEach(child => convertNode(r, child, depth+1, node) );
   let n = undefined
   try {
     n = node.endpoint.match(/:\/\/([^:]*)/)[1];
@@ -181,6 +182,7 @@ function convertNode(r, node, parent_node = null){
       filtered: false,
       raw_data: node,
       component: node.component,
+      depth: 0 //depth //fro nesting
     });
   return r;
 }

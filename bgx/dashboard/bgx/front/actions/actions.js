@@ -257,8 +257,10 @@ export function getDagNest() {
   };
 }
 
-export function changeDashboard(dispatch, code) {
-  return axios.get(`${apiUrl}/validator?endpoint=${encodeURI(code)}`).then( response => {
+export function changeDashboard(dispatch, code = null) {
+  console.log('31231312313', code);
+  const url = code == null ? `${apiUrl}/validator` : `${apiUrl}/validator?endpoint=${encodeURI(code)}`
+  return axios.get(`${url}`).then( response => {
     dispatch(getBlocksAndTopologyAndDagNest());
 
     dispatch(getTransactions());

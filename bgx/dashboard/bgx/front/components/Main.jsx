@@ -30,6 +30,7 @@ import Feedback from './Feedback';
 import LogoSvg from '../assets/logo.svg';
 import Modal from './Modal';
 import Batches from './Batches';
+import Ledger2 from './Ledger2';
 
 import { getTransactions, getPeers, getStates, getBlocks } from '../actions/actions';
 
@@ -114,14 +115,20 @@ class Main extends React.Component {
                   Dev
                 </a>
                  <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a className={classNames('dropdown-item')}
+                    <a className='dropdown-item'
                        id="state-tab"
                        data-toggle="tab"
                        href="#state"
                        role="tab">
                       State
                     </a>
-
+                     <a className='dropdown-item'
+                       id="ledger2-tab"
+                       data-toggle="tab"
+                       href="#ledger2"
+                       role="tab">
+                      Ledger 2.0
+                    </a>
                 </div>
                 </li>
 
@@ -165,6 +172,10 @@ class Main extends React.Component {
           </div>
           <div className={classNames("tab-pane", "fade")} id="wallet" role="tabpanel">
             <Wallet/>
+          </div>
+
+          <div className={classNames("tab-pane", "fade")} id="ledger2" role="tabpanel">
+            <Ledger2/>
           </div>
         </div>
 

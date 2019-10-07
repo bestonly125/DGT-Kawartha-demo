@@ -31,11 +31,22 @@ export function convertBlocks(data) {
         return dd.header.previous_block_id == d.header_signature;
       }).map((dd) => {return dd.header_signature});
     d.isHidden = false;
+    d.depth = 0;
 
     return d;
   })
   return d;
   // return compactBlocks(d);
+}
+
+
+function calcNesting(el, data, depth) {
+  if (el.depends.length > 0){
+    const parent = data.find(e => e.IP == el.depends[0]);
+    return calcNesting(parent, data, depth+1)
+  }
+  else
+    return depth;
 }
 
 export function compactBlocks(o_data, dagNest={}) {
@@ -67,6 +78,7 @@ export function compactBlocks(o_data, dagNest={}) {
           lastDependedOnBy: [d.IP],
           preLastDependedOnBy: [d.IP],
           firstDependedOnBy: [d.IP],
+          depth: 0,
         }
         d.depends=[thread.IP]
       }
@@ -98,6 +110,10 @@ export function compactBlocks(o_data, dagNest={}) {
     else
       return d;
   }).filter(r => r != undefined);
+
+  result.forEach(dd => {
+    dd.depth = calcNesting(dd, result, 1);
+  })
 
   return result;
 }
