@@ -34,7 +34,7 @@ import Legend from './Legend';
 import Filters from './Filters';
 import Card from './Card';
 
-class Graph extends React.Component {
+class Graph2 extends React.Component {
   constructor(props) {
     super(props);
 
@@ -322,7 +322,7 @@ graph.data = cloneDeep(this.props.data);
     graph.force = d3.layout.force()
         .nodes(graph.nodeValues)
         .links(graph.links)
-        .linkStrength(function(d) { return d.strength; })
+        .linkStrength(3)
         .size([graph.width, graph.height])
         .linkDistance(this.state.scale*6)
         .charge(this.state.scale * -50)
@@ -332,11 +332,11 @@ graph.data = cloneDeep(this.props.data);
    function tick(e) {
         graph.numTicks++;
 
-        // graph.force.nodes().forEach(d => {
-        //     if (d.depth != 0) {
-        //         d.y = 40 * d.depth;
-        //     }
-        // })
+        graph.force.nodes().forEach(d => {
+            if (d.depth != 0) {
+                d.y = 40 * d.depth;
+            }
+        })
 
         graph.line
             .attr('x1', function(d) {
@@ -1170,7 +1170,7 @@ starterColor(ip) {
   }
 }
 
-Graph.defaultProps = {
+Graph2.defaultProps = {
   size: {
     width: 780,
     height: 600,
@@ -1189,4 +1189,4 @@ export default connect (
       blockColors: state.blocksReducer.topology,
       pubKey: state.blocksReducer.nodes.identity.PubKey,
     }),
-    null)(Graph);
+    null)(Graph2);

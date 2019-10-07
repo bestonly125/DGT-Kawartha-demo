@@ -27,7 +27,7 @@ import Hash from './Hash';
 
 import ReactTable from 'react-table';
 
-import { showModal, getTopology } from '../actions/actions';
+import { showModal, getTopology, changeDashboard } from '../actions/actions';
 
 class Peers extends React.Component {
   constructor(props){
@@ -69,7 +69,7 @@ class Peers extends React.Component {
   }
 
   render() {
-    const { data, filters, columns, loading, topologyType } = this.props;
+    const { data, filters, columns, loading, topologyType, onChangeDashboard } = this.props;
     const { selectedIP, selectedFilters, legend } = this.state;
 
     return (
@@ -77,7 +77,9 @@ class Peers extends React.Component {
         <div className='row'>
           <div className='col-9'>
             <Graph data={data}
-              btns={[{name: 'Update', handler: this.update}]}
+              btns={[{name: 'Back', handler: onChangeDashboard},
+                     {name: 'Update', handler: this.update},
+                     ]}
               filters={filters}
               selectedPeerIP={selectedIP}
               selectedFilters={selectedFilters}
@@ -98,7 +100,7 @@ class Peers extends React.Component {
 
         <div className='tab-offset'>
         <Card id='node-data' title='Node Data'
-                  btns={[{name: 'Update', handler: this.update}]}
+                  btns={[{name: 'Update', handler: onChangeDashboard}]}
                   loading={loading}>
           <ReactTable data={data}
               defaultPageSize={10}
@@ -161,13 +163,13 @@ Peers.defaultProps = {
   ],
 };
 
-function mapStateToProps(store) {
-  return {
-    data: store.blocksReducer.nodes.data,
-    topologyType: store.blocksReducer.nodes.topology,
-    loading: store.blocksReducer.loading,
-    filters:  store.blocksReducer.nodes.filters,
-  };
-}
-
-export default connect (mapStateToProps, null)(Peers);
+export default connect (
+  state => ({
+    data: state.blocksReducer.nodes.data,
+    topologyType: state.blocksReducer.nodes.topology,
+    loading: state.blocksReducer.loading,
+    filters:  state.blocksReducer.nodes.filters,
+  }),
+  dispatch => ({
+      onChangeDashboard: () => changeDashboard(dispatch),
+  }))(Peers);

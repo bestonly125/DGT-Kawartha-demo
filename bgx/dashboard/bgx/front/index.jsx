@@ -22,7 +22,8 @@ import { faEnvelope,
          faChevronDown,
          faSearch,
          faSync,
-         faFilter } from '@fortawesome/free-solid-svg-icons';
+         faFilter,
+         faUndo } from '@fortawesome/free-solid-svg-icons';
 
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
@@ -43,6 +44,7 @@ library.add(faChevronDown);
 library.add(faSearch);
 library.add(faSync);
 library.add(faFilter);
+library.add(faUndo);
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
