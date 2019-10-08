@@ -280,10 +280,9 @@ export function run(dispatch, params) {
   if (local) {
     dispatch(getRunSuccess(link))
     return;
-    params.url = 'http://127.0.0.1:8080'
   }
 
-  return axios.get(`${params.url}/run?cmd=${params.cmd}&${u}`).then( response => {
+  return axios.get(`${apiUrl}/run?url=${encodeURI(params.url)}&cmd=${params.cmd}&${u}`).then( response => {
     dispatch(getRunSuccess(response.link))
   })
   .catch(error => {
