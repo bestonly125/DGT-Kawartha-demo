@@ -20,6 +20,8 @@ import Hash from './Hash'
 
 import humanize from '../helpers/humanize';
 
+import BatchDetails from './BatchDetails';
+
 import { showModal2, getReceipt, getBatches, getBatchDetails } from '../actions/actions';
 
 
@@ -47,33 +49,7 @@ class Batches extends React.Component {
     return (
       <div>
 
-        <Card id='batch_details' title='Search Batch'>
-          <div className='input-group mb-2'>
-            <div className="input-group-prepend">
-              <div className="input-group-text">
-                <FontAwesomeIcon icon="search" />
-              </div>
-            </div>
-            <input type="text"
-              class="form-control"
-              placeholder="BatchId"
-              aria-label="Username"
-              aria-describedby="basic-addon1"
-              onChange={(e) => this.setState({batchId: e.target.value})}
-             />
-            <div class="input-group-append">
-              <button
-                className="btn btn-outline-secondary"
-                type="button"
-                onClick={() => {
-                  onGetBatchDetails(this.state.batchId)
-                  }
-                }>Search</button>
-            </div>
-          </div>
-          <JSONPretty json={receipt}/>
-
-        </Card>
+      <BatchDetails/>
 
       <div className='tab-offset'>
         <Card id='batches_card' title='Batches'

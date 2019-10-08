@@ -37,6 +37,9 @@ import {
   BATCHES_LOADING,
   GET_BATCH,
   BATCH_LOADING,
+
+  GET_RUN,
+  GET_REFRESH
 } from '../actions/actions'
 import {addState} from '../logic/state'
 import {filterPeers} from '../logic/peers'
@@ -218,6 +221,16 @@ function batchesReducer(state=initialState, action) {
       });
       default:
         return state;
+    case GET_RUN:
+      return Object.assign({}, state, {
+        link: action.data.link,
+        batchLoading: false,
+      });
+    case GET_REFRESH:
+      return Object.assign({}, state, {
+        batch_link: action.data,
+        batchLoading: false,
+      });
   }
   return state;
 }
