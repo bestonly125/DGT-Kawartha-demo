@@ -242,6 +242,10 @@ class Connection:
     """
 
     def __init__(self, url):
+        self.conn_init(url)
+        self._base_url = url
+
+    def conn_init(self,url):
         self._url = url
 
         self._ctx = Context.instance()
@@ -260,11 +264,16 @@ class Connection:
         self._monitor_sock = None
         self._monitor_fd = None
         self._monitor_task = None
+    
 
     @property
     def url(self):
         return self._url
-
+    def reopen(self,url):
+        self.close()
+        self.conn_init(url if url is not None else self._base_url)
+        LOGGER.debug('reopen to %s\n', self._url)
+        self.open()
     def open(self):
         """Opens the connection.
 
@@ -272,7 +281,7 @@ class Connection:
         Messages are either received as replies to outgoing messages, or
         received from an incoming queue.
         """
-        LOGGER.info('Connecting to %s', self._url)
+        LOGGER.debug('Connecting to %s', self._url)
         asyncio.ensure_future(self._do_start())
 
     def on_connection_state_change(self, event_type, callback):
@@ -386,7 +395,7 @@ class Connection:
             except asyncio.CancelledError:
                 # We've been cancelled, so let's just exit
                 return
-
+            LOGGER.warning('try reconnect current socket')
             asyncio.ensure_future(self._do_start(reconnect=True))
         except zmq.ZMQError as e:
             # The monitor socket was probably closed
