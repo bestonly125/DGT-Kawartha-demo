@@ -13,7 +13,7 @@
 // -----------------------------------------------------------------------------
 
 import axios from 'axios';
-import { nodes, transactions, states, state, blocks, topology, dagNest, batches, reciept } from '../dummies'
+import { nodes, transactions, states, state, blocks, topology, dagNest, batches, reciept,link } from '../dummies'
 
 import { convertPeers } from '../logic/peers'
 import { convertTransactions } from '../logic/transactions'
@@ -37,6 +37,8 @@ export const SHOW_BLOCKS = 'SHOW_BLOCKS';
 export const GET_PEERS = 'GET_PEERS';
 export const GET_TOPOLOGY = 'GET_TOPOLOGY';
 export const GET_DAG_NEST = 'GET_DAG_NEST';
+export const GET_RUN = 'GET_RUN';
+export const GET_REFRESH = 'GET_REFRESH';
 
 export const TRANSACTIONS_LOADING = 'TRANSACTIONS_LOADING';
 export const BATCHES_LOADING = 'BATCHES_LOADING';
@@ -51,7 +53,6 @@ export const DAG_NEST_LOADING = 'DAG_NEST_LOADING';
 export const SHOW_MODAL = 'SHOW_MODAL';
 
 const local = false;
-
 
 function nextPage(url, data, resolve, reject){
   return axios.get(url).
@@ -258,7 +259,6 @@ export function getDagNest() {
 }
 
 export function changeDashboard(dispatch, code = null) {
-  console.log('31231312313', code);
   const url = code == null ? `${apiUrl}/validator` : `${apiUrl}/validator?endpoint=${encodeURI(code)}`
   return axios.get(`${url}`).then( response => {
     dispatch(getBlocksAndTopologyAndDagNest());
@@ -273,6 +273,45 @@ export function changeDashboard(dispatch, code = null) {
     // dispatch(getPeersSuccess(convertPeers(nodes)))
   })
 }
+
+export function run(dispatch, params) {
+  let u = new URLSearchParams(params.params).toString();
+
+  if (local) {
+    dispatch(getRunSuccess(link))
+    return;
+    params.url = 'http://127.0.0.1:8080'
+  }
+
+  return axios.get(`${params.url}/run?cmd=${params.cmd}&${u}`).then( response => {
+    dispatch(getRunSuccess(response.link))
+  })
+  .catch(error => {
+        alert(error);
+    throw(error);
+
+    // dispatch(getPeersSuccess(convertPeers(nodes)))
+  })
+}
+
+export function refreshLink(dispatch, link) {
+  if (local) {
+    dispatch(getRefreshSuccess(reciept))
+    return;
+    params.url = 'http://127.0.0.1:8080'
+  }
+
+  return axios.get(`${link}`).then( response => {
+      dispatch(getRefreshSuccess(convertBatch(response.data)));
+  })
+  .catch(error => {
+        alert(error);
+    throw(error);
+
+    // dispatch(getPeersSuccess(convertPeers(nodes)))
+  })
+}
+
 
 export function getReceipt(dispatch, id) {
   return axios.get(`${apiUrl}/receipts?id=${id}`).then( response => {
@@ -376,6 +415,22 @@ function getBatchesSuccess(data) {
 function getBatchSuccess(data) {
   return {
     type: GET_BATCH,
+    loading: false,
+    data,
+    };
+}
+
+function getRunSuccess(data) {
+  return {
+    type: GET_RUN,
+    loading: false,
+    data,
+    };
+}
+
+function getRefreshSuccess(data) {
+  return {
+    type: GET_REFRESH,
     loading: false,
     data,
     };
