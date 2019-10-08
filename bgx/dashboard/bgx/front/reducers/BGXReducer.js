@@ -222,8 +222,9 @@ function batchesReducer(state=initialState, action) {
       default:
         return state;
     case GET_RUN:
+      console.log('3333', action);
       return Object.assign({}, state, {
-        link: action.link,
+        link: action.data.link,
         batchLoading: false,
       });
     case GET_REFRESH:

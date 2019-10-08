@@ -283,7 +283,7 @@ export function run(dispatch, params) {
   }
 
   return axios.get(`${apiUrl}/run?url=${encodeURI(params.url)}&cmd=${params.cmd}&${u}`).then( response => {
-    dispatch(getRunSuccess(response.link))
+    dispatch(getRunSuccess(response.data))
   })
   .catch(error => {
         alert(error);
@@ -300,7 +300,7 @@ export function refreshLink(dispatch, link) {
     params.url = 'http://127.0.0.1:8080'
   }
 
-  return axios.get(`${link}`).then( response => {
+  return axios.get(`${apiUrl}/run_statuses?link=${encodeURI(link)}`).then( response => {
       dispatch(getRefreshSuccess(convertBatch(response.data)));
   })
   .catch(error => {
