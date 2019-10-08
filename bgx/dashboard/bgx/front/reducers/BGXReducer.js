@@ -223,7 +223,7 @@ function batchesReducer(state=initialState, action) {
         return state;
     case GET_RUN:
       return Object.assign({}, state, {
-        link: action.data.link,
+        link: action.link,
         batchLoading: false,
       });
     case GET_REFRESH:
