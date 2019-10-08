@@ -15,9 +15,12 @@
 import React from 'react';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import { connect } from 'react-redux';
 import packageJson from '../../package.json';
 import $ from 'jquery';
+import JSONPretty from 'react-json-pretty';
+import ReactTable from 'react-table'
+import Hash from './Hash'
 
 import Transactions from './Transactions';
 import Blocks from './Blocks';
@@ -55,6 +58,7 @@ class Main extends React.Component {
 
     return (
       <div>
+      <div className='web'>
         <Modal/>
         <nav className={classNames('navbar', 'navbar-light', 'navbar-expand-lg', 'bg-light')}>
           <a className="navbar-brand" href="#">
@@ -193,8 +197,47 @@ class Main extends React.Component {
 
         <Feedback/>
       </div>
+        <div className={`for-printer ${this.props.print==0 ? 'print' : 'no-print'}`}>
+          <h3>Topology</h3>
+          <JSONPretty json={this.props.data}/>
+        </div>
+
+        <div className={`for-printer ${this.props.print==1 ? 'print' : 'no-print'}`}>
+          <h3>Transactions</h3>
+          <table>
+            <tr>
+              <th>Family name</th>
+              <th>Hash TX</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Transaction</th>
+            </tr>
+            { this.props.transactions.map(d => {
+              return <tr>
+                <td>{`${d.header.family_name} ${d.header.family_version}`}</td>
+                <td><Hash hash={d.header_signature}/></td>
+                <td>{d.header.inputs.map(i => {return <Hash hash={i}/>})}</td>
+                <td>{d.header.outputs.map(i => {return <Hash hash={i}/>})}</td>
+                <td><Hash hash={d.header.signer_public_key}/></td>
+                </tr>
+              })
+            }
+          </table>
+        </div>
+      </div>
     );
   }
 }
-
-export default Main;
+Main.defaultProps = {
+  transactions: [],
+  loading: false,
+};
+export default connect (
+  state => ({
+    transactions: state.transactionReducer.data,
+    data: state.blocksReducer.nodes.data.map(d =>  d.raw_data),
+    print: state.stateReducer.print
+  }),
+  dispatch => ({
+      onChangeDashboard: () => changeDashboard(dispatch),
+  }))(Main);

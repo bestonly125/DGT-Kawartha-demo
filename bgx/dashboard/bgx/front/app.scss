@@ -248,3 +248,25 @@ opacity: 0;
     margin-right: 10px;
   }
 }
+
+.for-printer {
+  display:none;
+
+  table, th, td {
+    border: 1px solid black;
+  }
+}
+
+
+@media print {
+    .web {
+     display: none;
+    }
+    .no-print {
+      display: none;
+    }
+
+    .print {
+      display: block !important;
+    }
+}

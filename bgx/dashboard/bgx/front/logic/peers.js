@@ -112,6 +112,8 @@ function convertFilters(filters, d){
 function convertNode(r, node, depth, parent_node = null){
   let children = {};
 
+  let raw = cloneDeep(node);
+  delete raw.IP;
   // if (typeof node.cluster !== 'undefined') children = node.cluster.children;
   if (typeof node.children !== 'undefined') children = node.children;
 
@@ -180,7 +182,7 @@ function convertNode(r, node, depth, parent_node = null){
       legend: [{"Main": main}],
       tooltip: tooltip,
       filtered: false,
-      raw_data: node,
+      raw_data: raw,
       component: node.component,
       depth: 0 //depth //fro nesting
     });

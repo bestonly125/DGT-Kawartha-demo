@@ -41,6 +41,8 @@ class Card extends React.Component {
         return <FontAwesomeIcon icon={"sync"} />
       case 'Back':
         return <FontAwesomeIcon icon={"undo"} />
+      case 'Print':
+        return <FontAwesomeIcon icon={"print"} />
       default:
         return btn.name
     }

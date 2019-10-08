@@ -49,10 +49,13 @@ export const PEERS_LOADING = 'PEERS_LOADING';
 export const TOPOLOGY_LOADING = 'TOPOLOGY_LOADING';
 export const DAG_NEST_LOADING = 'DAG_NEST_LOADING';
 
+export const PRINT_TOPOLOGY = 'PRINT_TOPOLOGY';
+export const PRINT_TRANSACTIONS = 'PRINT_TRANSACTIONS';
+
 
 export const SHOW_MODAL = 'SHOW_MODAL';
 
-const local = false;
+const local = true;
 
 function nextPage(url, data, resolve, reject){
   return axios.get(url).

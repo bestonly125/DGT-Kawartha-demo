@@ -39,7 +39,10 @@ import {
   BATCH_LOADING,
 
   GET_RUN,
-  GET_REFRESH
+  GET_REFRESH,
+
+  PRINT_TOPOLOGY,
+  PRINT_TRANSACTIONS
 } from '../actions/actions'
 import {addState} from '../logic/state'
 import {filterPeers} from '../logic/peers'
@@ -96,6 +99,18 @@ function stateReducer(state=initialState, action) {
     case GET_STATE:
       return Object.assign({}, state, {
         data: addState(state.data, action.data)
+      });
+
+    case PRINT_TOPOLOGY: {
+      setTimeout(() => window.print(), 2000);
+      return Object.assign({}, state, {
+        print: 0
+      });
+    }
+    case PRINT_TRANSACTIONS:
+      setTimeout(() => window.print(), 2000);
+      return Object.assign({}, state, {
+        print: 1
       });
 
     default:
@@ -222,7 +237,6 @@ function batchesReducer(state=initialState, action) {
       default:
         return state;
     case GET_RUN:
-      console.log('3333', action);
       return Object.assign({}, state, {
         link: action.data.link,
         batch_link: undefined,

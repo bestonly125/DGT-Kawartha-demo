@@ -27,7 +27,7 @@ import Hash from './Hash';
 
 import ReactTable from 'react-table';
 
-import { showModal, getTopology, changeDashboard } from '../actions/actions';
+import { showModal, getTopology, changeDashboard, PRINT_TOPOLOGY} from '../actions/actions';
 
 class Peers extends React.Component {
   constructor(props){
@@ -69,7 +69,7 @@ class Peers extends React.Component {
   }
 
   render() {
-    const { data, filters, columns, loading, topologyType, onChangeDashboard } = this.props;
+    const { data, filters, columns, loading, topologyType, onChangeDashboard, onPrint } = this.props;
     const { selectedIP, selectedFilters, legend } = this.state;
 
     return (
@@ -77,7 +77,8 @@ class Peers extends React.Component {
         <div className='row'>
           <div className='col-9'>
             <Graph data={data}
-              btns={[{name: 'Back', handler: onChangeDashboard},
+              btns={[{name: 'Print', handler: onPrint},
+                     {name: 'Back', handler: onChangeDashboard},
                      {name: 'Update', handler: this.update},
                      ]}
               filters={filters}
@@ -172,4 +173,6 @@ export default connect (
   }),
   dispatch => ({
       onChangeDashboard: () => changeDashboard(dispatch),
+      onPrint: () => dispatch({type: PRINT_TOPOLOGY} ),
+
   }))(Peers);

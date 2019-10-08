@@ -20,7 +20,7 @@ import Hash from './Hash'
 
 import humanize from '../helpers/humanize';
 
-import { showModal2, getReceipt, getTransactions } from '../actions/actions';
+import { showModal2, getReceipt, getTransactions, PRINT_TRANSACTIONS } from '../actions/actions';
 
 
 import ReactTable from 'react-table'
@@ -38,10 +38,11 @@ class Transactions extends React.Component {
   }
 
   render() {
-    const {transactions, columns, loading, onShowModal, onGetReceipt} = this.props
+    const {transactions, columns, loading, onShowModal, onGetReceipt, onPrint} = this.props
     return (
       <Card id='transactions_card' title='Transactions'
-        btns={[{name: 'Update', handler: this.update}]}
+        btns={[{name: 'Print', handler: onPrint},
+               {name: 'Update', handler: this.update}]}
         loading={loading}>
         {!transactions.length ? (
         <strong> No transactions</strong>
@@ -138,5 +139,6 @@ export default connect (
   dispatch => ({
     onShowModal: json => showModal2(dispatch, json),
     onGetReceipt: id => getReceipt(dispatch, id),
+    onPrint: () => dispatch({type: PRINT_TRANSACTIONS} )
   })
   )(Transactions);
