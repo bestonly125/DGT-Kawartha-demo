@@ -55,7 +55,7 @@ export const PRINT_TRANSACTIONS = 'PRINT_TRANSACTIONS';
 
 export const SHOW_MODAL = 'SHOW_MODAL';
 
-const local = true;
+const local = false;
 
 function nextPage(url, data, resolve, reject){
   return axios.get(url).
