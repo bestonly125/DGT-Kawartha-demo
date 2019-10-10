@@ -117,6 +117,14 @@ Batches.defaultProps = {
       return d.header.transaction_ids.length
     },
   },
+  { id: 'timestamp',
+    Header: 'Timestamp',
+    filterable: false,
+    accessor: d => {
+      var date = new Date(d.timestamp*1000);
+      return date.toISOString();
+    },
+  },
   {
     id: 'signer_public_key',
     Header: 'Signer Public Key',
