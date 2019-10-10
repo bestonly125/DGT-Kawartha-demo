@@ -22,7 +22,7 @@ import humanize from '../helpers/humanize';
 
 import BatchDetails from './BatchDetails';
 
-import { showModal2, getReceipt, getBatches, getBatchDetails } from '../actions/actions';
+import { showModal2, getReceipt, getBatches, getBatchDetails, onPrint, PRINT_BATCHES } from '../actions/actions';
 
 
 import ReactTable from 'react-table'
@@ -45,7 +45,7 @@ class Batches extends React.Component {
   }
 
   render() {
-    const {batches, receipt, columns, loading, onShowModal, onGetReceipt, onGetBatches, onGetBatchDetails} = this.props
+    const {batches, receipt, columns, loading, onShowModal, onGetReceipt, onGetBatches, onGetBatchDetails, onPrint} = this.props
     return (
       <div>
 
@@ -53,7 +53,8 @@ class Batches extends React.Component {
 
       <div className='tab-offset'>
         <Card id='batches_card' title='Batches'
-          btns={[{name: 'Update', handler: () => {store.dispatch(getBatches())}}]}
+          btns={[{name: 'Print', handler: onPrint},
+                 {name: 'Update', handler: () => {store.dispatch(getBatches())}}]}
           loading={loading}>
           {!batches.length ? (
           <strong> No batches</strong>
@@ -111,7 +112,7 @@ Batches.defaultProps = {
     },
   },
   { id: 'transaction_count',
-    Header: 'Transaction Count',
+    Header: 'Transactions Count',
     filterable: false,
     accessor: d => {
       return d.header.transaction_ids.length
@@ -148,5 +149,6 @@ export default connect (
     onGetReceipt: id => getReceipt(dispatch, id),
     onGetBatches: () => getBatches(dispatch),
     onGetBatchDetails: id => getBatchDetails(dispatch, id),
+    onPrint: () => dispatch({type: PRINT_BATCHES} )
   })
   )(Batches);

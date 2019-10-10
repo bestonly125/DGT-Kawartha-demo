@@ -42,7 +42,8 @@ import {
   GET_REFRESH,
 
   PRINT_TOPOLOGY,
-  PRINT_TRANSACTIONS
+  PRINT_TRANSACTIONS,
+  PRINT_BATCHES
 } from '../actions/actions'
 import {addState} from '../logic/state'
 import {filterPeers} from '../logic/peers'
@@ -111,6 +112,11 @@ function stateReducer(state=initialState, action) {
       setTimeout(() => window.print(), 2000);
       return Object.assign({}, state, {
         print: 1
+      });
+    case PRINT_BATCHES:
+      setTimeout(() => window.print(), 2000);
+      return Object.assign({}, state, {
+        print: 2
       });
 
     default:

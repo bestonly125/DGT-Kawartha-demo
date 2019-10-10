@@ -224,16 +224,42 @@ class Main extends React.Component {
             }
           </table>
         </div>
+
+        <div className={`for-printer ${this.props.print==2 ? 'print' : 'no-print'}`}>
+          <h3>Batches</h3>
+          <table>
+            <tr>
+              <th>Batch ID</th>
+              <th>Transactions</th>
+              <th>Transactions Count</th>
+              <th>Timestamp</th>
+              <th>Signer Public Key</th>
+            </tr>
+            { this.props.batches.map(d => {
+              var date = new Date(d.timestamp*1000);
+              return <tr>
+                <td>{<Hash hash={d.header_signature}/>}</td>
+                <td>{d.header.transaction_ids.map(i => {return <div><Hash hash={i}/><br/></div>})}</td>
+                <td>{d.header.transaction_ids.length}</td>
+                <td>{date.toISOString()}</td>
+                <td><Hash hash={d.header.signer_public_key}/></td>
+                </tr>
+              })
+            }
+          </table>
+        </div>
       </div>
     );
   }
 }
 Main.defaultProps = {
   transactions: [],
+  batches: [],
   loading: false,
 };
 export default connect (
   state => ({
+    batches: state.batchesReducer.data,
     transactions: state.transactionReducer.data,
     data: state.blocksReducer.nodes.data.map(d =>  d.raw_data),
     print: state.stateReducer.print
