@@ -15,6 +15,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import JSONPretty from 'react-json-pretty';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PRINT_JSON, onPrint} from '../actions/actions';
 
 import $ from 'jquery';
@@ -34,9 +35,9 @@ class Modal extends React.Component {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalLongTitle">{title}</h5>
-              <button type="button" onClick={() => {this.props.onPrint(json, title)} }>
-                <span aria-hidden="true">Print</span>
-              </button>
+              <div style={{position: 'absolute', right: '50px', top: '18px'}} onClick={() => {this.props.onPrint(json, title)} }>
+                <FontAwesomeIcon icon={"print"} />
+              </div>
               <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
