@@ -15,6 +15,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import JSONPretty from 'react-json-pretty';
+import { PRINT_JSON, onPrint} from '../actions/actions';
 
 import $ from 'jquery';
 
@@ -33,6 +34,9 @@ class Modal extends React.Component {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalLongTitle">{title}</h5>
+              <button type="button" onClick={() => {this.props.onPrint(json, title)} }>
+                <span aria-hidden="true">Print</span>
+              </button>
               <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -57,10 +61,11 @@ Modal.defaultProps = {
   }
 }
 
-function mapStateToProps(store) {
-  return {
-    modal: store.modalReducer
-  };
-}
+export default connect (
+  state => ({
+    modal: state.modalReducer
+  }),
+  dispatch => ({
+      onPrint: (json, title) => dispatch({type: PRINT_JSON, json: json, header: title} ),
+  }))(Modal);
 
-export default connect (mapStateToProps, null)(Modal);

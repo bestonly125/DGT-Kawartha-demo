@@ -248,6 +248,11 @@ class Main extends React.Component {
             }
           </table>
         </div>
+
+        <div className={`for-printer ${this.props.print==3 ? 'print' : 'no-print'}`}>
+          <h3>{this.props.printHeader}</h3>
+          <JSONPretty json={this.props.printJson}/>
+        </div>
       </div>
     );
   }
@@ -262,7 +267,9 @@ export default connect (
     batches: state.batchesReducer.data,
     transactions: state.transactionReducer.data,
     data: state.blocksReducer.nodes.data.map(d =>  d.raw_data),
-    print: state.stateReducer.print
+    print: state.stateReducer.print,
+    printJson: state.stateReducer.print_json,
+    printHeader: state.stateReducer.print_header,
   }),
   dispatch => ({
       onChangeDashboard: () => changeDashboard(dispatch),

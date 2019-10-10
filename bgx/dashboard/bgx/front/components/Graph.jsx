@@ -217,8 +217,8 @@ graph.data = cloneDeep(this.props.data);
     graph.width  = w - graph.margin.left - graph.margin.right;
     graph.height = h - graph.margin.top  - graph.margin.bottom;
 
-    $(`#${this.props.id}-container`).animate({scrollTop: this.props.oriented ? 0 : h/2}, 200);
-    $(`#${this.props.id}-container`).animate({scrollLeft: w/2}, 200);
+    $(`#${this.props.id}-container`).animate({scrollTop: this.props.oriented ? 0 : h/4}, 200);
+    $(`#${this.props.id}-container`).animate({scrollLeft: w/4}, 200);
 
     var div = d3.select(`#${this.props.id}-graph`).append("div")
         .attr("class", "tooltip")
@@ -743,7 +743,7 @@ graph.data = cloneDeep(this.props.data);
       collapseChildren
         .attr('transform',`translate(${bounds.x2-10}, ${bounds.y2+6})`)
         .attr('display', function(d){
-            return 'none';
+          return 'none';
           return (!that.props.collapseFront || that.checkNodeHidden(d)) ? 'none' : 'block'
         })
 

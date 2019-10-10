@@ -52,6 +52,7 @@ export const DAG_NEST_LOADING = 'DAG_NEST_LOADING';
 export const PRINT_TOPOLOGY = 'PRINT_TOPOLOGY';
 export const PRINT_TRANSACTIONS = 'PRINT_TRANSACTIONS';
 export const PRINT_BATCHES = 'PRINT_BATCHES';
+export const PRINT_JSON = 'PRINT_JSON';
 
 
 export const SHOW_MODAL = 'SHOW_MODAL';

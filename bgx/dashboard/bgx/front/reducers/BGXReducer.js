@@ -43,7 +43,8 @@ import {
 
   PRINT_TOPOLOGY,
   PRINT_TRANSACTIONS,
-  PRINT_BATCHES
+  PRINT_BATCHES,
+  PRINT_JSON
 } from '../actions/actions'
 import {addState} from '../logic/state'
 import {filterPeers} from '../logic/peers'
@@ -117,6 +118,14 @@ function stateReducer(state=initialState, action) {
       setTimeout(() => window.print(), 2000);
       return Object.assign({}, state, {
         print: 2
+      });
+
+    case PRINT_JSON:
+      setTimeout(() => window.print(), 2000);
+      return Object.assign({}, state, {
+        print: 3,
+        print_json: action.json,
+        print_header: action.header
       });
 
     default:
