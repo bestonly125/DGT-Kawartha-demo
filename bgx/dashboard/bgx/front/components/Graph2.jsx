@@ -322,10 +322,10 @@ graph.data = cloneDeep(this.props.data);
     graph.force = d3.layout.force()
         .nodes(graph.nodeValues)
         .links(graph.links)
-        .linkStrength(3)
+        .linkStrength(2)
         .size([graph.width, graph.height])
-        .linkDistance(this.state.scale*6)
-        .charge(this.state.scale * -50)
+        .linkDistance(10)
+        .charge(this.state.scale * -25)
         .on('tick', tick)
 
 
@@ -334,7 +334,7 @@ graph.data = cloneDeep(this.props.data);
 
         graph.force.nodes().forEach(d => {
             if (d.depth != 0) {
-                d.y = 40 * d.depth;
+                d.y = that.state.scale * 5 * d.depth;
             }
         })
 

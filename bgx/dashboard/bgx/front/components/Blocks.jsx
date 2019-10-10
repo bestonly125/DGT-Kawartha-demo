@@ -26,7 +26,8 @@ import { showModal, getBlocksAndTopologyAndDagNest } from '../actions/actions';
 class Blocks extends React.Component {
   constructor(props){
     super(props);
-    this.state = { selectedBlock: null};
+    this.state = { selectedBlock: null,
+      oriented: false,};
   }
 
   selectBlock(ip) {
@@ -55,11 +56,13 @@ class Blocks extends React.Component {
               <div className='row'>
                 <div className='col-10'>
                   <Graph data={data} id='blocks_graph' title='Ledger'
-                    btns={[{name: 'Update', handler: this.update}]}
+                    btns={[{name: this.state.oriented ? 'ChangeO' : 'ChangeS', handler: () => this.setState({oriented: !this.state.oriented})},
+                           {name: 'Update', handler: this.update}]}
                     size={{width: 878, height: 800}}
                     selectedPeerIP={selectedBlock}
                     onSelect={(e) => this.selectBlock(e)}
-                    loading={loading}/>
+                    loading={loading}
+                    oriented={this.state.oriented}/>
                 </div>
                 <div className='col-2'>
                   <Card id='topology' title='Topology'>

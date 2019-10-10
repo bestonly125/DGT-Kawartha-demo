@@ -25,6 +25,7 @@ export function convertBlocks(data) {
     d.IP = d.header_signature;
     d.tooltip = {
       1: d.header_signature,
+      '№': d.block_num
     };
     d.depends = prev == undefined ? [] : [prev.header_signature];
     d.dependedOnBy = data.filter((dd) => {

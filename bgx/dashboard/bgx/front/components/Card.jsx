@@ -43,6 +43,10 @@ class Card extends React.Component {
         return <FontAwesomeIcon icon={"undo"} />
       case 'Print':
         return <FontAwesomeIcon icon={"print"} />
+      case 'ChangeS':
+        return <FontAwesomeIcon icon={"sitemap"} />
+      case 'ChangeO':
+        return <FontAwesomeIcon icon={"sun"} />
       default:
         return btn.name
     }

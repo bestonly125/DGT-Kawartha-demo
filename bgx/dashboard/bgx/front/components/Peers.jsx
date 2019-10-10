@@ -85,6 +85,7 @@ class Peers extends React.Component {
               selectedPeerIP={selectedIP}
               selectedFilters={selectedFilters}
               id='peers_graph'
+              hex={true}
               title={`Node [${topologyType}]`}
               onSelect={(e) => this.selectPeer(e)}
               onFilter={(e) => this.filterPeer(e)}

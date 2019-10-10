@@ -197,11 +197,27 @@ graph.data = cloneDeep(this.props.data);
         left   : 20
     };
 
+    let h = this.props.size.height;
+    let w = this.props.size.width;
+
+    if (graph.data.length > 50) {
+        h *= 4;
+        w *= 4;
+    }
+
+    else if (graph.data.length > 20) {
+        h *= 2;
+        w *= 2;
+    }
+
     $(`#${this.props.id}-graph`)
-        .css('height', this.props.size.height + 'px')
+        .css('height', h + 'px')
+        .css('width', w + 'px')
         .css('position', 'relative');
-    graph.width  = this.props.size.width  - graph.margin.left - graph.margin.right;
-    graph.height = this.props.size.height - graph.margin.top  - graph.margin.bottom;
+    graph.width  = w - graph.margin.left - graph.margin.right;
+    graph.height = h - graph.margin.top  - graph.margin.bottom;
+
+
 
     var div = d3.select(`#${this.props.id}-graph`).append("div")
         .attr("class", "tooltip")
@@ -239,8 +255,8 @@ graph.data = cloneDeep(this.props.data);
 
     graph.svg = d3.select(`#${this.props.id}-graph`)
       .append('svg')
-        .attr('width' , this.props.size.width)//graph.width + graph.margin.right  + graph.margin.left)
-        .attr('height', this.props.size.height-40)//graph.height + graph.margin.top  + graph.margin.bottom)
+        .attr('width' , w)//graph.width + graph.margin.right  + graph.margin.left)
+        .attr('height', h-40)//graph.height + graph.margin.top  + graph.margin.bottom)
       .append('g')
         .attr('transform', 'translate(' + graph.margin.left + ',' + graph.margin.top + ')');
 
@@ -322,21 +338,22 @@ graph.data = cloneDeep(this.props.data);
     graph.force = d3.layout.force()
         .nodes(graph.nodeValues)
         .links(graph.links)
-        .linkStrength(function(d) { return d.strength; })
+        .linkStrength(2)
         .size([graph.width, graph.height])
-        .linkDistance(this.state.scale*6)
-        .charge(this.state.scale * -50)
+        .linkDistance(that.props.oriented  ? 10 : this.state.scale*6)
+        .charge(that.props.oriented  ? (this.state.scale * -25) : (this.state.scale * -50))
         .on('tick', tick)
-
 
    function tick(e) {
         graph.numTicks++;
 
-        // graph.force.nodes().forEach(d => {
-        //     if (d.depth != 0) {
-        //         d.y = 40 * d.depth;
-        //     }
-        // })
+        if (that.props.oriented) {
+            graph.force.nodes().forEach(d => {
+                if (d.depth != 0) {
+                    d.y = that.state.scale * 5 * d.depth;
+                }
+            })
+        }
 
         graph.line
             .attr('x1', function(d) {
@@ -557,7 +574,10 @@ graph.data = cloneDeep(this.props.data);
         lines.forEach(function(line) {
             var text = node.append('text')
                 .text(function(d) {
-                   return that.state.collapsedNodes.indexOf(d.IP) == -1 ? d.name : `${d.name}...`;
+                    if (that.props.hex)
+                       return d.name.length > 4 ? `${d.name.substring(0,4)}...` : `${d.name.substring(0,4)}`;
+                    else
+                       return that.state.collapsedNodes.indexOf(d.IP) == -1 ? d.name : `${d.name}...`;
                 })
                 .attr('dy', dy + 'em');
             dy += ddy;
@@ -642,7 +662,6 @@ graph.data = cloneDeep(this.props.data);
       .attr('fill', function(d) {
           return   '#f8f9fa';
         })
-
       .attr('display',  function(d){
         return that.checkNodeHidden(d) ? 'none' : 'block'
       })
@@ -657,7 +676,6 @@ graph.data = cloneDeep(this.props.data);
         .classed('sum', function(d){
           return d.name == "+" || d.name == "-";
         })
-
 
       var padding  = 5,
           margin   = 1
@@ -789,11 +807,55 @@ graph.data = cloneDeep(this.props.data);
                 ${b.x2+10},${b.y1} ${b.x2},${(b.y2 + b.y1)/2}  ${b.x2+10},${b.y2}
                 ${b.x1-10},${b.y2} ${b.x1},${(b.y1 + b.y2)/2}`;
 
-    else
-        return `${b.x1},${b.y1+6} ${b.x1+2},${b.y1+2} ${b.x1+6},${b.y1}
-                ${b.x2-6},${b.y1} ${b.x2-2},${b.y1+2} ${b.x2},${b.y1+6}
-                ${b.x2},${b.y2-6} ${b.x2-2},${b.y2-2} ${b.x2-5},${b.y2}
-                ${b.x1+6},${b.y2} ${b.x1+2},${b.y2-2} ${b.x1},${b.y2-6}`;
+    else {
+        let x00, x01, y00, y01;
+        if (b.x1 > b.x2) {
+            x00 = b.x2;
+            x01 = b.x1;
+        }
+        else    {
+            x00 = b.x1;
+            x01 = b.x2;
+        }
+
+        if (b.y1 > b.y2) {
+            y00 = b.y2;
+            y01 = b.y1;
+        }
+        else    {
+            y00 = b.y1;
+            y01 = b.y2;
+        }
+
+        let mult = 16
+
+        let lx = (x01 - x00) / mult;
+        let ly = y01 - y00
+
+        let y = ly/2*1.732;
+        let bb = lx/2 + y;
+        let x = bb* 1.732/2;
+
+        // let y = (y00 + ly/2)/2;
+        // let x = (2*y + lx) / 2.5;//(2 + Math.sqrt(2)/2);
+
+        let x0 = b.x1;
+        let x1 = x0 + bb/2;
+        let x2 = x1 + bb;
+        let x3 = x2 + bb/2;
+
+        let y0 = b.y1 + ly/2;
+        let y1 = y0 + x;
+        let y2 = y0 - x;
+
+        if (this.props.hex)
+            return `${x0},${y0} ${x1},${y1}  ${x2},${y1}  ${x3},${y0} ${x2},${y2} ${x1},${y2}`;
+        else
+            return `${b.x1},${b.y1+6} ${b.x1+2},${b.y1+2} ${b.x1+6},${b.y1}
+                    ${b.x2-6},${b.y1} ${b.x2-2},${b.y1+2} ${b.x2},${b.y1+6}
+                    ${b.x2},${b.y2-6} ${b.x2-2},${b.y2-2} ${b.x2-5},${b.y2}
+                    ${b.x1+6},${b.y2} ${b.x1+2},${b.y2-2} ${b.x1},${b.y2-6}`;
+    }
 }
 
   checkNodeSelected(p){
@@ -1086,9 +1148,9 @@ starterColor(ip) {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { data, lastN, loading } = this.props;
+    const { data, lastN, loading, oriented} = this.props;
 
-    if (data != prevProps.data) {
+    if (data != prevProps.data || oriented != prevProps.oriented) {
       this.drawGraph();
       this.redrawNodes();
       this.deselectObject();
@@ -1159,7 +1221,8 @@ starterColor(ip) {
           </div>
         </div>
         <div className='graphLayer'>
-          <div id={`${id}-container`}>
+          <div id={`${id}-container`} style={{overflow: 'scroll',
+                                              height: this.props.size.height}}>
             <div  id={`${id}-graph`}>
               <div id={`{${id}-tooltip}`} />
             </div>
@@ -1173,7 +1236,7 @@ starterColor(ip) {
 Graph.defaultProps = {
   size: {
     width: 780,
-    height: 600,
+    height: 500,
   },
   selectedFilters: null,
   filters: [],
@@ -1181,6 +1244,8 @@ Graph.defaultProps = {
   collapseBack: true,
   collapseFront: true,
   loading: false,
+  oriented: false,
+  hex: false,
 }
 
 export default connect (

@@ -128,15 +128,22 @@ function convertNode(r, node, depth, parent_node = null){
   let ch = Object.keys(children).map(key => {return {...children[key], key:key };});
 
   ch.forEach(child => convertNode(r, child, depth+1, node) );
+
+
   let n = undefined
-  try {
-    n = node.endpoint.match(/:\/\/([^:]*)/)[1];
-  }
-  catch {
-    n = node.endpoint;
+
+  n = node.name;
+
+  if (n == undefined) {
+    try {
+      n = node.endpoint.match(/:\/\/([^:]*)/)[1];
+    }
+    catch {
+      n = node.endpoint;
+    }
   }
   if (n == undefined) n = trimHash(node.key);
-  if (n == '') n = node.name;
+  if (n == '') n = 'Noname';
 
   let main = {
     'Name': n,
