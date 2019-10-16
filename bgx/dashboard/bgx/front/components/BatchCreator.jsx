@@ -101,7 +101,6 @@ class BatchCreator extends React.Component {
       return null
 
     const params = tfamilies[family].commands[command];
-
     return (
       <fieldset class="form-group form-row">
         {params.map(k => {
@@ -111,7 +110,7 @@ class BatchCreator extends React.Component {
             type="text"
             className="form-control"
             id={`param${k}`}
-            value={this.state.params[k]}
+            value={k in this.state.params ? this.state.params[k] : ''}
             onChange={(e) => this.setState({params: {...this.state.params, [k]: e.target.value} })} />
           </div>
         })}
@@ -121,11 +120,7 @@ class BatchCreator extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    this.props.onRun({
-      url: this.state.url,
-      cmd: this.state.command,
-      params: this.state.params,
-    });
+    this.props.onRun({...{family: this.state.family, url: this.state.url, cmd: this.state.command}, ...this.state.params});
   }
 
   render() {

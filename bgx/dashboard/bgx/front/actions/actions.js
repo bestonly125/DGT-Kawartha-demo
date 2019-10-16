@@ -83,7 +83,6 @@ export function getTransactions() {
     dispatch(transactionsLoading());
 
     if (local) {
-       // dispatch(convertTransactions(transactions.data));
       return new Promise(resolve => {
         resolve( dispatch(getTransactionsSuccess(convertTransactions(transactions.data))));
       });
@@ -96,7 +95,6 @@ export function getTransactions() {
       })
       .catch(error => {
         console.log(error)
-        // dispatch(getTransactionsSuccess(convertTransactions(transactions)));
         throw(error);
       })
   };
@@ -107,7 +105,6 @@ export function getBatches() {
     dispatch(batchesLoading());
 
     if (local) {
-       // dispatch(convertTransactions(transactions.data));
       return new Promise(resolve => {
         resolve( dispatch(getBatchesSuccess(convertBatches(batches.data))));
       });
@@ -119,8 +116,7 @@ export function getBatches() {
         dispatch(getBatchesSuccess(convertBatches(data)));
       })
       .catch(error => {
-        console.log(error)
-        // dispatch(getTransactionsSuccess(convertTransactions(transactions)));
+        console.log(error);
         throw(error);
       })
   };
@@ -141,8 +137,6 @@ export function getBatchDetails(dispatch, id) {
   .catch(error => {
         alert(error);
     throw(error);
-
-    // dispatch(getPeersSuccess(convertPeers(nodes)))
   })
 }
 
@@ -156,7 +150,6 @@ export function getStates() {
       })
       .catch(error => {
         throw(error);
-        // dispatch(getStatesSuccess(convertStates(states)));
       })
   };
 }
@@ -200,7 +193,6 @@ export function getPeers() {
       })
       .catch(error => {
         throw(error);
-        // dispatch(getPeersSuccess(convertPeers(nodes)))
       })
   };
 }
@@ -220,7 +212,6 @@ export function getTopology() {
       })
       .catch(error => {
         throw(error);
-        // dispatch(getPeersSuccess(convertPeers(nodes)))
       })
   };
 }
@@ -258,7 +249,6 @@ export function getDagNest() {
       })
       .catch(error => {
         throw(error);
-        // dispatch(getPeersSuccess(convertPeers(nodes)))
       })
   };
 }
@@ -274,27 +264,21 @@ export function changeDashboard(dispatch, code = null) {
   .catch(error => {
         alert(error);
     throw(error);
-
-    // dispatch(getPeersSuccess(convertPeers(nodes)))
   })
 }
 
 export function run(dispatch, params) {
-  let u = new URLSearchParams(params.params).toString();
-
   if (local) {
     dispatch(getRunSuccess(link))
     return;
   }
 
-  return axios.get(`${apiUrl}/run?url=${encodeURI(params.url)}&cmd=${params.cmd}&${u}`).then( response => {
+  return axios.get(`${apiUrl}/run?${new URLSearchParams(params).toString()}`).then( response => {
     dispatch(getRunSuccess(response.data))
   })
   .catch(error => {
         alert(error);
     throw(error);
-
-    // dispatch(getPeersSuccess(convertPeers(nodes)))
   })
 }
 
@@ -311,8 +295,6 @@ export function refreshLink(dispatch, link) {
   .catch(error => {
         alert(error);
     throw(error);
-
-    // dispatch(getPeersSuccess(convertPeers(nodes)))
   })
 }
 
@@ -326,8 +308,6 @@ export function getReceipt(dispatch, id) {
   .catch(error => {
         alert(error);
     throw(error);
-
-    // dispatch(getPeersSuccess(convertPeers(nodes)))
   })
 }
 

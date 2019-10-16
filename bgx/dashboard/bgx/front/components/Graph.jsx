@@ -217,8 +217,8 @@ graph.data = cloneDeep(this.props.data);
     graph.width  = w - graph.margin.left - graph.margin.right;
     graph.height = h - graph.margin.top  - graph.margin.bottom;
 
-    $(`#${this.props.id}-container`).animate({scrollTop: this.props.oriented ? 0 : h/4}, 200);
-    $(`#${this.props.id}-container`).animate({scrollLeft: w/4}, 200);
+    $(`#${this.props.id}-container`).animate({scrollTop: this.props.oriented ? 0 : h*0.75}, 200);
+    $(`#${this.props.id}-container`).animate({scrollLeft: w*0.75}, 200);
 
     var div = d3.select(`#${this.props.id}-graph`).append("div")
         .attr("class", "tooltip")
