@@ -125,7 +125,7 @@ class BatchCreator extends React.Component {
   }
 
   renderCommand() {
-    const {command, receipt} = this.props;
+    const {command, receipt, onRefresh} = this.props;
     return <div>
         { 'data' in command ? (
           <JSONPretty json={command.data}/>
@@ -133,7 +133,7 @@ class BatchCreator extends React.Component {
           <div>
             {command.link}
             <br/>
-            <a className='btn btn-secondary' onClick={() => onRefresh(this.props.link)}>Refresh</a>
+            <a className='btn btn-secondary' onClick={() => onRefresh(command.link)}>Refresh</a>
             <br/>
             <JSONPretty json={receipt}/>
           </div>
