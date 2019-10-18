@@ -11,9 +11,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // -----------------------------------------------------------------------------
-export const link ={
+
+export const tx_families = {
+  "data": {
+    "bgt": {
+      "commands": {
+        "dec": [
+          "vallet",
+          "amount"
+        ],
+        "inc": [
+          "vallet",
+          "amount"
+        ],
+        "set": [
+          "vallet",
+          "amount"
+        ],
+        "show": [
+          "vallet"
+        ]
+      }
+    }
+  }
+}
+
+export const link = {
   "link": "http://bgx-api-2:8009/batch_statuses?id=851262082dac8d49103d1ed7a8426f1ec933e4c09f4067f5c6f3b8443fd8c2236355f9d2a465c304798f532f5de134259625b15399e0299812ae36994330c312"
 }
+
+export const linkData = {
+  "data": {
+    "bgt": "HHHHH",
+    "group": "BGT_token",
+    "sign": "0332c1feb4839fe7f815dbd2829a2b3e6a47cdd4405d14f486dfcac51c2f2b4a13",
+    "value": 1000
+  },
+  "link": "http://localhost:8003/run?cmd=show&family=bgt&url=0&vallet=HHHHH"
+}
+
 export const batches = {
   "data": [
     {
@@ -517,7 +553,6 @@ export const nodes = {
   },
   "link": "http://127.0.0.1:8003/peers"
 }
-
 
 export const transactions = {
   "data": [
