@@ -20,7 +20,7 @@ import Hash from './Hash'
 
 import humanize from '../helpers/humanize';
 
-import { showModal2, getReceipt, getBatches, getBatchDetails, run, refreshLink } from '../actions/actions';
+import { showModal2, getReceipt, getBatches, getBatchDetails, run, refreshLink, loadTxFamilies } from '../actions/actions';
 import BatchDetails from './BatchDetails';
 
 import ReactTable from 'react-table'
@@ -41,7 +41,8 @@ class BatchCreator extends React.Component {
   }
 
   componentDidMount(){
-    store.dispatch(getBatches());
+    //store.dispatch(getBatches());
+    this.props.onLoadTxFamilies();
   }
 
 
@@ -189,24 +190,10 @@ export default connect (
     link: state.batchesReducer.link,
     receipt: state.batchesReducer.batch_link,
     urls: [state.blocksReducer.nodes.identity.IP].concat(state.blocksReducer.nodes.data.map(d => d.component).filter(dd => {return dd != null})),
-    tfamilies: {
-      bgt: {
-        commands: {
-          set: ['vallet', 'amount'],
-          dec: ['vallet', 'amount'],
-          inc: ['vallet', 'amount'],
-          show: ['vallet'],
-        }
-      },
-     bgx2: {
-        commands: {
-          create: ['arg1', 'arg2'],
-          drop: ['arg1', 'arg2', 'arg3']
-        }
-      }
-    }
+    tfamilies: state.familiesReducer.data
   }),
   dispatch => ({
+    onLoadTxFamilies: () => loadTxFamilies(dispatch),
     onRun: params => run(dispatch, params),
     onRefresh: (link) => refreshLink(dispatch, link)
   })

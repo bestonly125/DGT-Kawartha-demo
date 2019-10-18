@@ -41,6 +41,8 @@ import {
   GET_RUN,
   GET_REFRESH,
 
+  LOAD_TX_FAMILY,
+
   PRINT_TOPOLOGY,
   PRINT_TRANSACTIONS,
   PRINT_BATCHES,
@@ -296,6 +298,19 @@ function modalReducer(state=initialModalState, action) {
   return state;
 }
 
+function familiesReducer(state=initialState, action) {
+  switch(action.type) {
+    case LOAD_TX_FAMILY:
+      return Object.assign({}, state, {
+        data: action.data,
+        loading: false,
+      });
+      default:
+        return state;
+  }
+  return state;
+}
+
 const BJXReducer = combineReducers({
   transactionReducer,
   peersReducer,
@@ -303,6 +318,7 @@ const BJXReducer = combineReducers({
   blocksReducer,
   batchesReducer,
   modalReducer,
+  familiesReducer,
 })
 
 export default BJXReducer;
