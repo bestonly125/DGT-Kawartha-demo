@@ -62,6 +62,7 @@ const initialState = {
 }
 
 const initialBatches = {
+  command: {},
   data: [],
   loading: false,
   batch: [],
@@ -229,7 +230,7 @@ function transactionReducer(state=initialState, action) {
   return state;
 }
 
-function batchesReducer(state=initialState, action) {
+function batchesReducer(state=initialBatches, action) {
   switch(action.type) {
     case GET_BATCHES:
       return Object.assign({}, state, {
@@ -255,7 +256,7 @@ function batchesReducer(state=initialState, action) {
         return state;
     case GET_RUN:
       return Object.assign({}, state, {
-        link: action.data.link,
+        command: action.data,
         batch_link: undefined,
         batchLoading: false,
       });

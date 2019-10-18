@@ -124,8 +124,27 @@ class BatchCreator extends React.Component {
     this.props.onRun({...{family: this.state.family, url: this.state.url, cmd: this.state.command}, ...this.state.params});
   }
 
+  renderCommand() {
+    const {command, receipt} = this.props;
+    return <div>
+        { 'data' in command ? (
+          <JSONPretty json={command.data}/>
+        ):(
+          <div>
+            {command.link}
+            <br/>
+            <a className='btn btn-secondary' onClick={() => onRefresh(this.props.link)}>Refresh</a>
+            <br/>
+            <JSONPretty json={receipt}/>
+          </div>
+        )
+
+        }
+      </div>;
+  }
+
   render() {
-    const {batches, link, onRefresh, receipt, columns, loading, onShowModal, onGetReceipt, onGetBatches, onGetBatchDetails, tfamilies} = this.props
+    const {batches, onRefresh, columns, loading, onShowModal, onGetReceipt, onGetBatches, onGetBatchDetails, tfamilies} = this.props
     return (
       <div>
 
@@ -138,11 +157,7 @@ class BatchCreator extends React.Component {
             <button type="submit" class="btn btn-secondary">Execute</button>
           </form>
 
-          {link}
-          <br/>
-          <a className='btn btn-secondary' onClick={() => onRefresh(this.props.link)}>Refresh</a>
-          <br/>
-          <JSONPretty json={receipt}/>
+          {this.renderCommand()}
         </Card>
       </div>
     )
@@ -187,7 +202,7 @@ BatchCreator.defaultProps = {
 
 export default connect (
   state => ({
-    link: state.batchesReducer.link,
+    command: state.batchesReducer.command,
     receipt: state.batchesReducer.batch_link,
     urls: [state.blocksReducer.nodes.identity.IP].concat(state.blocksReducer.nodes.data.map(d => d.component).filter(dd => {return dd != null})),
     tfamilies: state.familiesReducer.data

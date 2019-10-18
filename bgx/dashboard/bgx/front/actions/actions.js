@@ -14,7 +14,7 @@
 
 import axios from 'axios';
 import { nodes, transactions, states, state, blocks, topology,
-  dagNest, batches, reciept,link, tx_families } from '../dummies'
+  dagNest, batches, reciept,link, linkData, tx_families  } from '../dummies'
 
 import { convertPeers } from '../logic/peers'
 import { convertTransactions } from '../logic/transactions'
@@ -270,7 +270,7 @@ export function changeDashboard(dispatch, code = null) {
 
 export function run(dispatch, params) {
   if (local) {
-    dispatch(getRunSuccess(link))
+    dispatch(getRunSuccess(linkData))
     return;
   }
 
@@ -301,7 +301,7 @@ export function refreshLink(dispatch, link) {
 
 export function loadTxFamilies(dispatch) {
   if (local) {
-    dispatch(loadTxFamiliesSuccess(tx_families))
+    dispatch(loadTxFamiliesSuccess(tx_families.data))
     return;
   }
 
