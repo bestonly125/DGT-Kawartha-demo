@@ -217,8 +217,8 @@ graph.data = cloneDeep(this.props.data);
     graph.width  = w - graph.margin.left - graph.margin.right;
     graph.height = h - graph.margin.top  - graph.margin.bottom;
 
-    $(`#${this.props.id}-container`).animate({scrollTop: this.props.oriented ? 0 : h*0.75}, 200);
-    $(`#${this.props.id}-container`).animate({scrollLeft: w*0.75}, 200);
+    $(`#${this.props.id}-container`).animate({scrollTop: this.props.oriented ? 0 : h*0.25}, 200);
+    $(`#${this.props.id}-container`).animate({scrollLeft: w*0.25}, 200);
 
     var div = d3.select(`#${this.props.id}-graph`).append("div")
         .attr("class", "tooltip")
@@ -258,8 +258,6 @@ graph.data = cloneDeep(this.props.data);
       .append('svg')
         .attr('width' , w)//graph.width + graph.margin.right  + graph.margin.left)
         .attr('height', h-40)//graph.height + graph.margin.top  + graph.margin.bottom)
-      .append('g')
-        .attr('transform', 'translate(' + graph.margin.left + ',' + graph.margin.top + ')');
 
     graph.svg.classed('graph-container')
 }
@@ -289,7 +287,6 @@ graph.data = cloneDeep(this.props.data);
     let config = this.configg;
 
     let that = this;
-
 
     graph.svg.selectAll('*').remove();
 
@@ -339,11 +336,11 @@ graph.data = cloneDeep(this.props.data);
     graph.force = d3.layout.force()
         .nodes(graph.nodeValues)
         .links(graph.links)
-        .linkStrength(2)
         .size([graph.width, graph.height])
         .linkDistance(that.props.oriented  ? 10 : this.state.scale*6)
         .charge(that.props.oriented  ? (this.state.scale * -25) : (this.state.scale * -50))
         .on('tick', tick)
+        .start()
 
    function tick(e) {
         graph.numTicks++;
@@ -385,10 +382,8 @@ graph.data = cloneDeep(this.props.data);
         graph.node
             .attr('transform', function(d) {
                 return 'translate(' + d.x + ',' + d.y + ')';
-});
+            });
     }
-
-
 
     graph.draggedThreshold = d3.scale.linear()
         .domain([0, 0.1])
@@ -429,7 +424,7 @@ graph.data = cloneDeep(this.props.data);
             d.fixed &= ~6;
         });
 
-    graph.line = graph.svg.append('g').selectAll('.link')
+    graph.line = graph.svg.selectAll('.link')
         .data(graph.force.links())
         .enter().append('line')
         .attr('class', 'link');
@@ -584,15 +579,6 @@ graph.data = cloneDeep(this.props.data);
             dy += ddy;
         });
       });
-
-      graph.numTicks = 0;
-      graph.preventCollisions = false;
-      graph.force.start();
-
-        for (var i = 0; i < 50; i++) {
-            graph.force.tick();
-        }
-        graph.preventCollisions = true;
   }
 
   updateGraph(){
