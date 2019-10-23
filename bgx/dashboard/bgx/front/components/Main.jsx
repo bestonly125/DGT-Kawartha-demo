@@ -33,7 +33,6 @@ import Feedback from './Feedback';
 import LogoSvg from '../assets/logo.svg';
 import Modal from './Modal';
 import Batches from './Batches';
-import Ledger2 from './Ledger2';
 import BatchCreator from './BatchCreator';
 
 import { getTransactions, getPeers, getStates, getBlocks } from '../actions/actions';
@@ -134,13 +133,6 @@ class Main extends React.Component {
                        role="tab">
                       Batch Creator
                     </a>
-                    <a className='dropdown-item'
-                       id="ledger2-tab"
-                       data-toggle="tab"
-                       href="#ledger2"
-                       role="tab">
-                      Ledger 2.0
-                    </a>
                 </div>
                 </li>
 
@@ -188,10 +180,6 @@ class Main extends React.Component {
 
           <div className={classNames("tab-pane", "fade")} id="batchCreator" role="tabpanel">
             <BatchCreator/>
-          </div>
-
-          <div className={classNames("tab-pane", "fade")} id="ledger2" role="tabpanel">
-            <Ledger2/>
           </div>
         </div>
 

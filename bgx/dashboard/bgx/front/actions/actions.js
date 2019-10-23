@@ -13,7 +13,8 @@
 // -----------------------------------------------------------------------------
 
 import axios from 'axios';
-import { nodes, transactions, states, state, blocks, topology, dagNest, batches, reciept,link } from '../dummies'
+import { nodes, transactions, states, state, blocks, topology,
+  dagNest, batches, reciept,link, linkData, tx_families  } from '../dummies'
 
 import { convertPeers } from '../logic/peers'
 import { convertTransactions } from '../logic/transactions'
@@ -53,7 +54,7 @@ export const PRINT_TOPOLOGY = 'PRINT_TOPOLOGY';
 export const PRINT_TRANSACTIONS = 'PRINT_TRANSACTIONS';
 export const PRINT_BATCHES = 'PRINT_BATCHES';
 export const PRINT_JSON = 'PRINT_JSON';
-
+export const LOAD_TX_FAMILY = 'LOAD_TX_FAMILY';
 
 export const SHOW_MODAL = 'SHOW_MODAL';
 
@@ -269,7 +270,7 @@ export function changeDashboard(dispatch, code = null) {
 
 export function run(dispatch, params) {
   if (local) {
-    dispatch(getRunSuccess(link))
+    dispatch(getRunSuccess(linkData))
     return;
   }
 
@@ -298,6 +299,20 @@ export function refreshLink(dispatch, link) {
   })
 }
 
+export function loadTxFamilies(dispatch) {
+  if (local) {
+    dispatch(loadTxFamiliesSuccess(tx_families.data))
+    return;
+  }
+
+  return axios.get(`${apiUrl}/tx_families`).then( response => {
+    dispatch(loadTxFamiliesSuccess(response.data.data))
+  })
+  .catch(error => {
+        alert(error);
+    throw(error);
+  })
+}
 
 export function getReceipt(dispatch, id) {
   return axios.get(`${apiUrl}/receipts?id=${id}`).then( response => {
@@ -369,6 +384,14 @@ function getTopologySuccess(data) {
     loading: false,
     data: convertTopology(data),
     nodesData: convertPeers(data)
+    };
+}
+
+function loadTxFamiliesSuccess(data) {
+  return {
+    type: LOAD_TX_FAMILY,
+    loading: false,
+    data,
     };
 }
 

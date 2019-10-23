@@ -20,7 +20,7 @@ import Hash from './Hash'
 
 import humanize from '../helpers/humanize';
 
-import { showModal2, getReceipt, getBatches, getBatchDetails, run, refreshLink } from '../actions/actions';
+import { showModal2, getReceipt, getBatches, getBatchDetails, run, refreshLink, loadTxFamilies } from '../actions/actions';
 import BatchDetails from './BatchDetails';
 
 import ReactTable from 'react-table'
@@ -41,7 +41,8 @@ class BatchCreator extends React.Component {
   }
 
   componentDidMount(){
-    store.dispatch(getBatches());
+    //store.dispatch(getBatches());
+    this.props.onLoadTxFamilies();
   }
 
 
@@ -123,8 +124,27 @@ class BatchCreator extends React.Component {
     this.props.onRun({...{family: this.state.family, url: this.state.url, cmd: this.state.command}, ...this.state.params});
   }
 
+  renderCommand() {
+    const {command, receipt, onRefresh} = this.props;
+    return <div>
+        { 'data' in command ? (
+          <JSONPretty json={command.data}/>
+        ):(
+          <div>
+            {command.link}
+            <br/>
+            <a className='btn btn-secondary' onClick={() => onRefresh(command.link)}>Refresh</a>
+            <br/>
+            <JSONPretty json={receipt}/>
+          </div>
+        )
+
+        }
+      </div>;
+  }
+
   render() {
-    const {batches, link, onRefresh, receipt, columns, loading, onShowModal, onGetReceipt, onGetBatches, onGetBatchDetails, tfamilies} = this.props
+    const {batches, onRefresh, columns, loading, onShowModal, onGetReceipt, onGetBatches, onGetBatchDetails, tfamilies} = this.props
     return (
       <div>
 
@@ -137,11 +157,7 @@ class BatchCreator extends React.Component {
             <button type="submit" class="btn btn-secondary">Execute</button>
           </form>
 
-          {link}
-          <br/>
-          <a className='btn btn-secondary' onClick={() => onRefresh(this.props.link)}>Refresh</a>
-          <br/>
-          <JSONPretty json={receipt}/>
+          {this.renderCommand()}
         </Card>
       </div>
     )
@@ -186,27 +202,13 @@ BatchCreator.defaultProps = {
 
 export default connect (
   state => ({
-    link: state.batchesReducer.link,
+    command: state.batchesReducer.command,
     receipt: state.batchesReducer.batch_link,
     urls: [state.blocksReducer.nodes.identity.IP].concat(state.blocksReducer.nodes.data.map(d => d.component).filter(dd => {return dd != null})),
-    tfamilies: {
-      bgt: {
-        commands: {
-          set: ['vallet', 'amount'],
-          dec: ['vallet', 'amount'],
-          inc: ['vallet', 'amount'],
-          show: ['vallet'],
-        }
-      },
-     bgx2: {
-        commands: {
-          create: ['arg1', 'arg2'],
-          drop: ['arg1', 'arg2', 'arg3']
-        }
-      }
-    }
+    tfamilies: state.familiesReducer.data
   }),
   dispatch => ({
+    onLoadTxFamilies: () => loadTxFamilies(dispatch),
     onRun: params => run(dispatch, params),
     onRefresh: (link) => refreshLink(dispatch, link)
   })
