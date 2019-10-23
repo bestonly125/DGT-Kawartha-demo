@@ -24,17 +24,20 @@ import random
 import os
 from aiohttp import web
 import cbor
+import time
 # pylint: disable=no-name-in-module,import-error
 # needed for the google.protobuf imports to pass pylint
 from google.protobuf.json_format import MessageToDict
 from google.protobuf.message import DecodeError
 
-from sawtooth_rest_api.protobuf.validator_pb2 import Message
 
+#from sawtooth_sdk.protobuf.validator_pb2 import Message
 import sawtooth_rest_api.exceptions as errors
 from sawtooth_rest_api import error_handlers
 from sawtooth_rest_api.messaging import DisconnectError
 from sawtooth_rest_api.messaging import SendBackoffTimeoutError
+"""
+from sawtooth_rest_api.protobuf.validator_pb2 import Message
 from sawtooth_rest_api.protobuf import client_transaction_pb2
 from sawtooth_rest_api.protobuf import client_list_control_pb2
 from sawtooth_rest_api.protobuf import client_batch_submit_pb2
@@ -47,11 +50,29 @@ from sawtooth_rest_api.protobuf import client_status_pb2
 from sawtooth_rest_api.protobuf.block_pb2 import BlockHeader
 from sawtooth_rest_api.protobuf.batch_pb2 import Batch,BatchHeader,BatchList
 from sawtooth_rest_api.protobuf.transaction_pb2 import Transaction,TransactionHeader
+"""
+from sawtooth_sdk.protobuf.validator_pb2 import Message
+from sawtooth_sdk.protobuf import client_transaction_pb2
+from sawtooth_sdk.protobuf import client_list_control_pb2
+from sawtooth_sdk.protobuf import client_batch_submit_pb2
+from sawtooth_sdk.protobuf import client_state_pb2
+from sawtooth_sdk.protobuf import client_block_pb2
+from sawtooth_sdk.protobuf import client_batch_pb2
+from sawtooth_sdk.protobuf import client_receipt_pb2
+from sawtooth_sdk.protobuf import client_peers_pb2
+from sawtooth_sdk.protobuf import client_status_pb2
+from sawtooth_sdk.protobuf.block_pb2 import BlockHeader
+from sawtooth_sdk.protobuf.batch_pb2 import Batch,BatchHeader,BatchList
+from sawtooth_sdk.protobuf.transaction_pb2 import Transaction,TransactionHeader
+#from sawtooth_sdk.protobuf.transaction_pb2 import  Transaction,TransactionHeader
+#from sawtooth_sdk.protobuf.batch_pb2 import  Batch,BatchHeader,BatchList
 
 from sawtooth_rest_api.route_handlers import RouteHandler,DEFAULT_TIMEOUT
-
-#from sawtooth_signing.secp256k1 import Secp256k1PrivateKey, Secp256k1PublicKey, Secp256k1Context
-#from sawtooth_signing import CryptoFactory,create_context
+# bgt families
+from sawtooth_bgt.client_cli.generate import BgtPayload,create_bgt_transaction,loads_bgt_token
+from sawtooth_bgt.processor.handler import make_bgt_address
+from sawtooth_signing.secp256k1 import Secp256k1PrivateKey, Secp256k1PublicKey, Secp256k1Context
+from sawtooth_signing import CryptoFactory,create_context
 
 
 LOGGER = logging.getLogger(__name__)
@@ -71,6 +92,13 @@ class DashboardRouteHandler(RouteHandler):
 
         super().__init__(loop,connection,timeout,metrics_registry)
         # Dashboard init
+        self._context = create_context('secp256k1') 
+        self._private_key = Secp256k1PrivateKey.new_random()
+        self._public_key = self._context.get_public_key(self._private_key)
+        self._crypto_factory = CryptoFactory(self._context)
+        self._signer = self._crypto_factory.new_signer(self._private_key)
+        self._public_key_id = self._public_key.as_hex()
+        LOGGER.debug('DashboardRouteHandler: _signer PUBLIC_KEY=%s',self._public_key_id[:8])
         self._network = {}
         try:
             with open('./network.json') as file:
@@ -80,6 +108,52 @@ class DashboardRouteHandler(RouteHandler):
 
         
         #LOGGER.debug('DashboardRouteHandler: network=%s',self._network)
+    def _create_batch(self, transactions):
+        """
+        Create batch for transactions
+        """
+        transaction_signatures = [t.header_signature for t in transactions]
+
+        header = BatchHeader(
+            signer_public_key=self._signer.get_public_key().as_hex(),
+            transaction_ids=transaction_signatures
+        ).SerializeToString()
+
+        signature = self._signer.sign(header)
+
+        batch = Batch(
+            header=header,
+            transactions=transactions,
+            header_signature=signature,
+            timestamp=int(time.time())
+            )
+        return batch
+        #return BatchList(batches=[batch])
+
+    def _create_transaction(self,family,ver,payload,inputs,outputs,dependencies=[]):
+        """
+        make transaction
+        """
+        LOGGER.debug('BgxRouteHandler: _create_transaction make Transaction')
+        txn_header = TransactionHeader(
+            signer_public_key=self._signer.get_public_key().as_hex(),
+            family_name=family,
+            family_version=ver,
+            inputs=inputs,
+            outputs=outputs,
+            dependencies=dependencies,
+            payload_sha512=_sha512(payload),
+            batcher_public_key=self._signer.get_public_key().as_hex(),
+            nonce=hex(random.randint(0, 2**64))
+        ).SerializeToString()
+
+        signature = self._signer.sign(txn_header)
+        transaction = Transaction(
+            header=txn_header,
+            payload=payload,
+            header_signature=signature
+        )
+        return transaction
 
     async def index(self,request):
         html = request.match_info.get('html', '/')
@@ -96,6 +170,70 @@ class DashboardRouteHandler(RouteHandler):
         LOGGER.debug('DashboardRouteHandler: javascript=%s',request.path)
         content = open(os.path.join(ROOT,'app/js/'+request.path[1:]), 'r', encoding='utf-8').read()
         return web.Response(content_type='application/javascript', text=content)
+
+    async def run_transaction(self, request):
+        """
+        make transfer from wallet to wallet
+        """
+        family = request.url.query.get('family', None)
+        if family == 'bgt' :
+            cmd = request.url.query.get('cmd', None)
+            arg1 = request.url.query.get('wallet', None)
+            if cmd == 'show':
+                address = make_bgt_address(arg1)
+                error_traps = [error_handlers.InvalidAddressTrap,error_handlers.StateNotFoundTrap]
+                response = await self._query_validator(
+                    Message.CLIENT_STATE_GET_REQUEST,
+                    client_state_pb2.ClientStateGetResponse,
+                    client_state_pb2.ClientStateGetRequest(
+                        state_root='',
+                        address=address),
+                    error_traps)
+                LOGGER.debug('run_transaction: BGT show=%s (%s)!',arg1,response)
+                if response['status'] == 'OK':
+                    bgt = loads_bgt_token(response['value'],arg1)
+                    LOGGER.debug('run_transaction: BGT[%s]=%s!',arg1,bgt)
+                else:
+                    bgt = response['value']
+                return self._wrap_response(
+                    request,
+                    data=bgt,
+                    metadata=self._get_metadata(request, response))
+
+
+            
+            arg2 = request.url.query.get('amount', None)
+            arg3 = request.url.query.get('to', None)
+            LOGGER.debug('run_transaction family=%s cmd=%s(%s,%s) query=%s!!!',family,cmd,arg1,arg2,request.url.query)
+            transaction = create_bgt_transaction(verb=cmd,name=arg1,value=int(arg2),signer=self._signer,to=arg3)
+            batch = self._create_batch([transaction])
+            batch_id = batch.header_signature
+        else:
+            # undefined families
+            batch_id = None
+            link = ''
+
+        if batch_id is not None:
+            error_traps = [error_handlers.BatchInvalidTrap,error_handlers.BatchQueueFullTrap]
+            validator_query = client_batch_submit_pb2.ClientBatchSubmitRequest(batches=[batch])
+            LOGGER.debug('run_transaction send batch_id=%s',batch_id)
+
+            with self._post_batches_validator_time.time():
+                await self._query_validator(
+                    Message.CLIENT_BATCH_SUBMIT_REQUEST,
+                    client_batch_submit_pb2.ClientBatchSubmitResponse,
+                    validator_query,
+                    error_traps)
+            link = self._build_url(request, path='/batch_statuses', id=batch_id)
+        return self._wrap_response(
+            request,
+            data=None,
+            metadata={
+              'link': link,
+            }
+            )
+        
+
 
     async def fetch_peers(self, request):
         """Fetches the peers from the validator.
