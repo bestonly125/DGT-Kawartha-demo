@@ -22,36 +22,47 @@ import logging
 import random
 import string
 import time
-
+import base64
 import cbor
-
+import yaml
 from sawtooth_signing import create_context
 from sawtooth_signing import CryptoFactory
 
 from sawtooth_sdk.protobuf import transaction_pb2
 from sawtooth_sdk.protobuf import batch_pb2
-
+from bgt_common.protobuf.smart_bgt_token_pb2 import BgtTokenInfo
 from sawtooth_bgt.processor.handler import make_bgt_address
 
 
 LOGGER = logging.getLogger(__name__)
 
+def loads_bgt_token(data,name):
+    value = cbor.loads(base64.b64decode(data))[name]
+    token = BgtTokenInfo()
+    token.ParseFromString(value)
+    LOGGER.debug("BGT:%s %s=%s",name,token.group_code,token.decimals)
+    return {'bgt':name,'group':token.group_code,'value':token.decimals,'sign':token.sign}
 
 class BgtPayload:
-    def __init__(self, verb, name, value):
+    def __init__(self, verb, name, value,to = None):
         self._verb = verb
         self._name = name
         self._value = value
-
+        self._to    = to
         self._cbor = None
         self._sha512 = None
 
     def to_hash(self):
-        return {
+
+        ret = {
             'Verb': self._verb,
             'Name': self._name,
             'Value': self._value
+
         }
+        if self._to is not None :
+            ret['To'] = self._to
+        return ret
 
     def to_cbor(self):
         if self._cbor is None:
@@ -64,20 +75,25 @@ class BgtPayload:
         return self._sha512
 
 
-def create_bgt_transaction(verb, name, value, signer):
-    payload = BgtPayload(
-        verb=verb, name=name, value=value)
+def create_bgt_transaction(verb, name, value, signer,to = None):
+    payload = BgtPayload(verb=verb, name=name, value=value, to = to)
 
     # The prefix should eventually be looked up from the
     # validator's namespace registry.
     addr = make_bgt_address(name)
-
+    inputs  = [addr]
+    outputs = [addr]
+    if to is not None:
+        addr_to = make_bgt_address(to)
+        inputs.append(addr_to)
+        outputs.append(addr_to)
+    
     header = transaction_pb2.TransactionHeader(
         signer_public_key=signer.get_public_key().as_hex(),
         family_name='bgt',
         family_version='1.0',
-        inputs=[addr],
-        outputs=[addr],
+        inputs=inputs,
+        outputs=outputs,
         dependencies=[],
         payload_sha512=payload.sha512(),
         batcher_public_key=signer.get_public_key().as_hex(),
@@ -109,7 +125,8 @@ def create_batch(transactions, signer):
     batch = batch_pb2.Batch(
         header=header_bytes,
         transactions=transactions,
-        header_signature=signature)
+        header_signature=signature,
+        timestamp=int(time.time()))
 
     return batch
 
@@ -128,8 +145,7 @@ def generate_word_list(count):
 
 def do_generate(args):
     context = create_context('secp256k1')
-    signer = CryptoFactory(context).new_signer(
-        context.new_random_private_key())
+    signer = CryptoFactory(context).new_signer(context.new_random_private_key())
 
     words = generate_word_list(args.pool_size)
 
