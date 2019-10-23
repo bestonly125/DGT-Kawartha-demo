@@ -65,6 +65,7 @@ class BgtPayload:
         return self._sha512
 
 
+
 def create_bgt_transaction(verb, name, value, signer):
     payload = BgtPayload(
         verb=verb, name=name, value=value)
@@ -110,7 +111,8 @@ def create_batch(transactions, signer):
     batch = batch_pb2.Batch(
         header=header_bytes,
         transactions=transactions,
-        header_signature=signature)
+        header_signature=signature,
+        timestamp=int(time.time()))
 
     return batch
 
