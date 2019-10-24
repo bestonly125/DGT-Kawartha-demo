@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=_b('\n\025sawtooth.sdk.protobufP\001Z\tbatch_pb2'),
-  serialized_pb=_b('\n!bgx_settings/protobuf/batch.proto\x1a\'bgx_settings/protobuf/transaction.proto\"A\n\x0b\x42\x61tchHeader\x12\x19\n\x11signer_public_key\x18\x01 \x01(\t\x12\x17\n\x0ftransaction_ids\x18\x02 \x03(\t\"d\n\x05\x42\x61tch\x12\x0e\n\x06header\x18\x01 \x01(\x0c\x12\x18\n\x10header_signature\x18\x02 \x01(\t\x12\"\n\x0ctransactions\x18\x03 \x03(\x0b\x32\x0c.Transaction\x12\r\n\x05trace\x18\x04 \x01(\x08\"$\n\tBatchList\x12\x17\n\x07\x62\x61tches\x18\x01 \x03(\x0b\x32\x06.BatchB$\n\x15sawtooth.sdk.protobufP\x01Z\tbatch_pb2b\x06proto3')
+  serialized_pb=_b('\n!bgx_settings/protobuf/batch.proto\x1a\'bgx_settings/protobuf/transaction.proto\"A\n\x0b\x42\x61tchHeader\x12\x19\n\x11signer_public_key\x18\x01 \x01(\t\x12\x17\n\x0ftransaction_ids\x18\x02 \x03(\t\"w\n\x05\x42\x61tch\x12\x0e\n\x06header\x18\x01 \x01(\x0c\x12\x18\n\x10header_signature\x18\x02 \x01(\t\x12\"\n\x0ctransactions\x18\x03 \x03(\x0b\x32\x0c.Transaction\x12\r\n\x05trace\x18\x04 \x01(\x08\x12\x11\n\ttimestamp\x18\x05 \x01(\r\"M\n\tBatchList\x12\x17\n\x07\x62\x61tches\x18\x01 \x03(\x0b\x32\x06.Batch\x12\x14\n\x0c\x63\x61ndidate_id\x18\x02 \x01(\x0c\x12\x11\n\tblock_num\x18\x03 \x01(\rB$\n\x15sawtooth.sdk.protobufP\x01Z\tbatch_pb2b\x06proto3')
   ,
   dependencies=[bgx__settings_dot_protobuf_dot_transaction__pb2.DESCRIPTOR,])
 
@@ -100,6 +100,13 @@ _BATCH = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='timestamp', full_name='Batch.timestamp', index=4,
+      number=5, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -113,7 +120,7 @@ _BATCH = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=145,
-  serialized_end=245,
+  serialized_end=264,
 )
 
 
@@ -131,6 +138,20 @@ _BATCHLIST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='candidate_id', full_name='BatchList.candidate_id', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='block_num', full_name='BatchList.block_num', index=2,
+      number=3, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -143,8 +164,8 @@ _BATCHLIST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=247,
-  serialized_end=283,
+  serialized_start=266,
+  serialized_end=343,
 )
 
 _BATCH.fields_by_name['transactions'].message_type = bgx__settings_dot_protobuf_dot_transaction__pb2._TRANSACTION
