@@ -17,7 +17,7 @@ import { connect } from 'react-redux'
 import classNames from 'classnames/bind'
 import JSONPretty from 'react-json-pretty';
 import Hash from './Hash'
-import {Line} from 'react-chartjs-2';
+import {Line, Doughnut} from 'react-chartjs-2';
 import humanize from '../helpers/humanize';
 
 import { showModal2, getReceipt, getBatches, getBatchDetails, runDemo, refreshLink, loadTxFamilies } from '../actions/actions';
@@ -167,8 +167,8 @@ class Demonstration extends React.Component {
   generateTransactions() {
     const {failed, total} = this.state;
     var tr = this.initialTransactions();
+    let i = 2;
 
-    let i = 0;
     for (; i < failed; i++)
       tr.push(this.transaction(true))
 
@@ -273,12 +273,19 @@ class Demonstration extends React.Component {
   render() {
     const {demoData, batches, onRefresh, columns, loading, onShowModal, onGetReceipt, onGetBatches, onGetBatchDetails, tfamilies} = this.props
 
+    const committed = demoData.filter(d => d.data[0].status == 'COMMITTED').map((d,i) => d.date);
+    const invalid = demoData.filter(d => d.data[0].status == 'INVALID').map((d,i) => d.date);
+
+    let labels = [];
+    for (let i = 1; i < committed.length + invalid.length + 1; i ++ ){
+      labels.push(i);
+    }
 
     const data = {
       labels: demoData.map(d=> d.date),
       datasets: [
         {
-          label: 'Network load',
+          label: 'Committed Transactions',
           fill: false,
           lineTension: 0.1,
           backgroundColor: 'rgba(75,192,192,0.4)',
@@ -296,11 +303,49 @@ class Demonstration extends React.Component {
           pointHoverBorderWidth: 2,
           pointRadius: 1,
           pointHitRadius: 10,
-          data: demoData.map(d=> d.date)
-        }
+          data: committed
+        },{
+          label: 'Invalid Transactions',
+          fill: false,
+          lineTension: 0.1,
+          backgroundColor: 'rgba(255,193,7,0.4)',
+          borderColor: 'rgba(255,193,7,1)',
+          borderCapStyle: 'butt',
+          borderDash: [],
+          borderDashOffset: 0.0,
+          borderJoinStyle: 'miter',
+          pointBorderColor: 'rgba(255,193,7,1)',
+          pointBackgroundColor: '#fff',
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: 'rgba(255,193,7,1)',
+          pointHoverBorderColor: 'rgba(220,220,220,1)',
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          data: invalid
+        },
       ]
     };
 
+
+    const doughData = {
+      labels: [
+        'Committed Transactions',
+        'Failed Transactions',
+      ],
+      datasets: [{
+        data: [committed.length, invalid.length],
+        backgroundColor: [
+        '#28a745',
+        '#ffc107',
+        ],
+        hoverBackgroundColor: [
+        '#28a745',
+        '#ffc107',
+        ]
+      }]
+    };
 
     return (
       <div>
@@ -312,25 +357,33 @@ class Demonstration extends React.Component {
             <button type="submit" class="btn btn-secondary">Execute</button>
             {this.logs()}
           </form>
-
-          <Line data={data}
-            options={{
-              scales: {
-                yAxes: [{
-                  scaleLabel: {
-                    display: true,
-                    labelString: "Transaction count"
+          <div className='row'>
+            <div className='col-4'>
+              <Doughnut data={doughData} />
+            </div>
+          </div>
+          <div className='row'>
+            <div className='col'>
+              <Line data={data}
+                options={{
+                  scales: {
+                    yAxes: [{
+                      scaleLabel: {
+                        display: true,
+                        labelString: "Transaction count"
+                      }
+                    }],
+                    xAxes: [{
+                      scaleLabel: {
+                        display: true,
+                        labelString: "Time"
+                      }
+                    }]
                   }
-                }],
-                xAxes: [{
-                  scaleLabel: {
-                    display: true,
-                    labelString: "Time"
-                  }
-                }]
-              }
-            }}
-          />
+                }}
+              />
+            </div>
+          </div>
         </Card>
       </div>
     )

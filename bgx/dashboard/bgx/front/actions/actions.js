@@ -286,24 +286,39 @@ export function run(dispatch, params) {
   })
 }
 
-export function getRunDemoSuccess(dispatch, link) {
+export function getRunDemoSuccess(dispatch, data, i) {
+  console.log('dddata', data);
+  if (i > 4) {
+    dispatch({type: TO_LOG, log: `Stop trying ${data}`})
+    return
+  }
   if (local) {
     if ('data' in link) {
-      dispatch({type: TO_LOG, log: `Success from ${link}`})
+      dispatch({type: TO_LOG, log: `Success from ${data}`})
       dispatch(getRunDemoStatusSuccess(link))
     }
     else
-      setTimeout(() => getRunDemoSuccess(dispatch, link), 500);
+      setTimeout(() => getRunDemoSuccess(dispatch, link, i), 500);
     return;
   }
 
-  return axios.get(`${apiUrl}/run_statuses?link=${encodeURI(link)}`).then( response => {
-    if ('data' in link) {
-      dispatch({type: TO_LOG, log: `Success from ${link}`})
-      dispatch(getRunDemoStatusSuccess(convertBatch(response.data)))
+  return axios.get(encodeURI(data.link)).then( response => {
+    if ('data' in response) {
+      const d = response.data.data[0];
+      if (d.status == 'INVALID'){
+        dispatch({type: TO_LOG, log: `${d.status} from ${data.link}`})
+        dispatch({type: TO_LOG, log: `${d.invalid_transactions.map(t => t.message).join('\n\n')}`})
+        dispatch(getRunDemoStatusSuccess(convertBatch(response.data)))
+      }
+
+      else if (d.status == 'PENDING') {
+        setTimeout(() => getRunDemoSuccess(dispatch, data, i), 500);
+      }
+      else if (d.status == 'COMMITTED') {
+        dispatch({type: TO_LOG, log: `${d.status} from ${data.link}`})
+        dispatch(getRunDemoStatusSuccess(convertBatch(response.data)))
+      }
     }
-    else
-      setTimeout(() => getRunDemoSuccess(dispatch, link), 500);
   })
   .catch(error => {
         alert(error);
@@ -320,7 +335,7 @@ export function runDemo(dispatch, params) {
 
   return axios.get(`${apiUrl}/run?${new URLSearchParams(params).toString()}`).then( response => {
     dispatch({type: TO_LOG, log: `Run ${params.cmd} to ${params.url}`})
-    getRunDemoSuccess(dispatch, response.data);
+    getRunDemoSuccess(dispatch, response.data, 0);
   })
   .catch(error => {
         alert(error);
