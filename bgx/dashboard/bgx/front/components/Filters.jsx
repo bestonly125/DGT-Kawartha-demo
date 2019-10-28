@@ -23,7 +23,7 @@ import Card from './Card';
 
 class Filters extends React.Component {
   render() {
-    const {filters, selectedFilters} = this.props;
+    const {filters, selectedFilters, size} = this.props;
 
     return (
       <div className='tab-offset filters'>
@@ -36,13 +36,15 @@ class Filters extends React.Component {
                 return Object.keys(f.list).map((key) => {
                   let value = f.list[key]
                   let selected = {}
+                  let count = selectedFilters[f.field] !== key ? '' : `(${size})`;
                   selected[f.field] = key
+
                   return (<li key={key} className='list-inline-item'
                             style={ {backgroundColor: selectedFilters[f.field] !== undefined &&
                                                       selectedFilters[f.field] === key ? value : false } }>
 
                       <div onClick={() => this.props.onFilter(selected) }>
-                      <span className='marker' style={ {backgroundColor: value} } ></span>{humanize(key)}</div>
+                      <span className='marker' style={ {backgroundColor: value} } ></span>{`${humanize(key)} ${count}`}</div>
                     </li>)
                 })
               })}

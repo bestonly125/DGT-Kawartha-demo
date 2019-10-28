@@ -68,6 +68,16 @@ class Peers extends React.Component {
     this.setState({selectedFilters: filters});
   }
 
+  filteredNodes() {
+    const { data } = this.props;
+    const { selectedFilters } = this.state;
+    console.log('www',selectedFilters);
+
+    const key = Object.keys(selectedFilters)[0];
+
+    return data.filter(d => d[key] == selectedFilters[key]).length;
+  }
+
   render() {
     const { data, filters, columns, loading, topologyType, onChangeDashboard, onPrint } = this.props;
     const { selectedIP, selectedFilters, legend } = this.state;
@@ -98,7 +108,8 @@ class Peers extends React.Component {
         <Filters
           filters={filters}
           selectedFilters={selectedFilters}
-          onFilter={(e) => this.filterPeer(e)}/>
+          onFilter={(e) => this.filterPeer(e)}
+          size={this.filteredNodes()}/>
 
         <div className='tab-offset'>
         <Card id='node-data' title='Node Data'
