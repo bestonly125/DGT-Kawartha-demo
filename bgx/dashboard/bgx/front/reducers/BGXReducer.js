@@ -43,6 +43,9 @@ import {
 
   LOAD_TX_FAMILY,
 
+  GET_RUN_DEMO,
+  TO_LOG,
+
   PRINT_TOPOLOGY,
   PRINT_TRANSACTIONS,
   PRINT_BATCHES,
@@ -60,6 +63,13 @@ const initialState = {
   data: [],
   loading: false,
 }
+
+const initialDemoState = {
+  data: [],
+  logs: [],
+  loading: false,
+}
+
 
 const initialBatches = {
   command: {},
@@ -131,6 +141,18 @@ function stateReducer(state=initialState, action) {
         print_header: action.header
       });
 
+    default:
+      return state;
+  }
+  return state;
+}
+
+function demoReducer(state=initialDemoState, action) {
+  switch(action.type) {
+    case GET_RUN_DEMO:
+      return {...state, loading: false, data: [...state.data, {...action.data, date: Date.now()}]};
+    case TO_LOG:
+      return {...state, logs: [...state.logs, `${new Date().toLocaleTimeString()}: ${action.log}`]};
     default:
       return state;
   }
@@ -320,6 +342,7 @@ const BJXReducer = combineReducers({
   batchesReducer,
   modalReducer,
   familiesReducer,
+  demoReducer,
 })
 
 export default BJXReducer;

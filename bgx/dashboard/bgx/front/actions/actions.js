@@ -14,7 +14,7 @@
 
 import axios from 'axios';
 import { nodes, transactions, states, state, blocks, topology,
-  dagNest, batches, reciept,link, linkData, tx_families  } from '../dummies'
+  dagNest, batches, reciept,linkLink, linkData, tx_families  } from '../dummies'
 
 import { convertPeers } from '../logic/peers'
 import { convertTransactions } from '../logic/transactions'
@@ -57,6 +57,9 @@ export const PRINT_JSON = 'PRINT_JSON';
 export const LOAD_TX_FAMILY = 'LOAD_TX_FAMILY';
 
 export const SHOW_MODAL = 'SHOW_MODAL';
+
+export const GET_RUN_DEMO = 'GET_RUN_DEMO';
+export const TO_LOG = 'TO_LOG';
 
 const local = false;
 
@@ -283,6 +286,64 @@ export function run(dispatch, params) {
   })
 }
 
+export function getRunDemoSuccess(dispatch, data, i) {
+  console.log('dddata', data);
+  if (i > 4) {
+    dispatch({type: TO_LOG, log: `Stop trying ${data}`})
+    return
+  }
+  if (local) {
+    if ('data' in link) {
+      dispatch({type: TO_LOG, log: `Success from ${data}`})
+      dispatch(getRunDemoStatusSuccess(link))
+    }
+    else
+      setTimeout(() => getRunDemoSuccess(dispatch, link, i), 500);
+    return;
+  }
+
+  return axios.get(encodeURI(data.link)).then( response => {
+    if ('data' in response) {
+      const d = response.data.data[0];
+      if (d.status == 'INVALID'){
+        dispatch({type: TO_LOG, log: `${d.status} from ${data.link}`})
+        dispatch({type: TO_LOG, log: `${d.invalid_transactions.map(t => t.message).join('\n\n')}`})
+        dispatch(getRunDemoStatusSuccess(convertBatch(response.data)))
+      }
+
+      else if (d.status == 'PENDING') {
+        setTimeout(() => getRunDemoSuccess(dispatch, data, i), 500);
+      }
+      else if (d.status == 'COMMITTED') {
+        dispatch({type: TO_LOG, log: `${d.status} from ${data.link}`})
+        dispatch(getRunDemoStatusSuccess(convertBatch(response.data)))
+      }
+    }
+  })
+  .catch(error => {
+        alert(error);
+    throw(error);
+  })
+}
+
+export function runDemo(dispatch, params) {
+  if (local) {
+    dispatch({type: TO_LOG, log: `Run ${params.cmd} to ${params.url}`})
+    getRunDemoSuccess(dispatch, linkData);
+    return;
+  }
+
+  return axios.get(`${apiUrl}/run?${new URLSearchParams(params).toString()}`).then( response => {
+    dispatch({type: TO_LOG, log: `Run ${params.cmd} to ${params.url}`})
+    getRunDemoSuccess(dispatch, response.data, 0);
+  })
+  .catch(error => {
+        alert(error);
+    throw(error);
+  })
+}
+
+
 export function refreshLink(dispatch, link) {
   if (local) {
     dispatch(getRefreshSuccess(reciept))
@@ -438,6 +499,14 @@ function getRunSuccess(data) {
 function getRefreshSuccess(data) {
   return {
     type: GET_REFRESH,
+    loading: false,
+    data,
+    };
+}
+
+function getRunDemoStatusSuccess(data) {
+  return {
+    type: GET_RUN_DEMO,
     loading: false,
     data,
     };

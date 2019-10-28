@@ -34,6 +34,7 @@ import LogoSvg from '../assets/logo.svg';
 import Modal from './Modal';
 import Batches from './Batches';
 import BatchCreator from './BatchCreator';
+import Demonstration from './Demonstration';
 
 import { getTransactions, getPeers, getStates, getBlocks } from '../actions/actions';
 
@@ -133,6 +134,14 @@ class Main extends React.Component {
                        role="tab">
                       Batch Creator
                     </a>
+                    <a className='dropdown-item'
+                       id="demonstration-tab"
+                       data-toggle="tab"
+                       href="#demonstration"
+                       role="tab">
+                      Demonstartion
+                    </a>
+
                 </div>
                 </li>
 
@@ -177,9 +186,11 @@ class Main extends React.Component {
           <div className={classNames("tab-pane", "fade")} id="wallet" role="tabpanel">
             <Wallet/>
           </div>
-
           <div className={classNames("tab-pane", "fade")} id="batchCreator" role="tabpanel">
             <BatchCreator/>
+          </div>
+          <div className={classNames("tab-pane", "fade")} id="demonstration" role="tabpanel">
+            <Demonstration/>
           </div>
         </div>
 
@@ -224,7 +235,7 @@ class Main extends React.Component {
               <th>Signer Public Key</th>
             </tr>
             { this.props.batches.map(d => {
-              var date = new Date(d.timestamp*1000);
+              var date = new Date('timestamp' in d ? d.timestamp*1000 : 0);
               return <tr>
                 <td>{<Hash hash={d.header_signature}/>}</td>
                 <td>{d.header.transaction_ids.map(i => {return <div><Hash hash={i}/><br/></div>})}</td>
