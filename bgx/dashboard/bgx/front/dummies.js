@@ -4017,7 +4017,7 @@ export const topology ={
       "Parent": "UNDEF",
       "PubKey": "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0"
     },
-    "Network": "BGX TEST network",
+    "Network": "DGT TEST network",
     "children": {
       "029ac16cc6e986e8c38a636102345acb041cf26e4d9c47b36290cb1558c6861ff0": {
         "cluster": {
